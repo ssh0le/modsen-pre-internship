@@ -12,7 +12,7 @@ export const helpOptions: InlineKeyboardMarkup = {
     ]
 }
 
-composer.action('/cat', async (ctx) => {
+optionComposer.action('/cat', async (ctx) => {
     console.log('cat action')
     sendCatPhoto(ctx);
 });
