@@ -1,8 +1,18 @@
+import { ObjectId } from "mongoose";
 import { Context, Scenes, Telegraf } from "telegraf";
+import { Update } from "telegraf/types";
 
-export interface BotContext extends Context {
-    scene: Scenes.SceneContextScene<any, Scenes.WizardSessionData>,
-    state: object,
+interface CustomSessionData extends Scenes.WizardSessionData{
+    newTask: {
+        description?: string,
+        date?: Date,
+    },
+}
+
+export interface BotContext <U extends Update = Update> extends Context<U> {
+    session: any;
+    scene: Scenes.SceneContextScene<BotContext, CustomSessionData>,
+    wizard: Scenes.WizardContextWizard<BotContext>;
 }
 
 export type Bot = Telegraf<BotContext>; 
@@ -60,7 +70,15 @@ export interface WeatherError {
 }
 
 export interface DBUser {
-    id: string,
+    _id: ObjectId,
     telegramId: string,
+    name: string,
     city: string,
+}
+
+export interface DBTask {
+    _id: ObjectId,
+    description: string,
+    userId: string,
+    date: Date, 
 }
