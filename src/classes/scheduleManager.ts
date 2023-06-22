@@ -1,15 +1,10 @@
 import schedule from 'node-schedule';
 
-interface ScheduleElement<T> {
-    id: T,
-    job: schedule.Job,
-}
-
 export class ScheduleManager<T> {
-    _sheduleList: ScheduleElement<T>[];
+    _sheduleList: Map<T, schedule.Job>;
 
     constructor() {
-        this._sheduleList = []
+        this._sheduleList = new Map();
     }
 
     addRecurrentJob(id: T, hours: number, minutes: number, scheduledJob: () => void) {
@@ -17,25 +12,19 @@ export class ScheduleManager<T> {
         rule.hour = hours;
         rule.minute = minutes;
         const job = schedule.scheduleJob(rule, scheduledJob);
-        this._sheduleList.push({
-            id,
-            job
-        })
+        this._sheduleList.set(id,job)
     }
 
     addOneTimeJob(id: T, date: Date, scheduledJob: () => void) {
         const job = schedule.scheduleJob(date, scheduledJob);
-        this._sheduleList.push({
-            id,
-            job
-        })
+        this._sheduleList.set(id, job)
     }
 
     cancelJob(id: T) {
-        const [element] = this._sheduleList.filter(j => j.id === id);
-        if (element) {
-            element.job.cancel();
-            this._sheduleList = this._sheduleList.filter(j => j.id !== id);
+        if (this._sheduleList.has(id)) {
+            const job = this._sheduleList.get(id);
+            job.cancel();
+            this._sheduleList.delete(id);
         }
     }
 }
