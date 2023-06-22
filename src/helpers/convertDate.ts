@@ -1,6 +1,6 @@
 export const convertDate = (str: string): Date | null => {
     const matches = str.match(/[0-3]?[0-9].[0-1]?[0-9].202[3-9].*[0-2]?[0-9].[0-6]?[0-9]/);
-    if (!matches.length) return null; 
+    if (!matches || !matches.length) return null; 
     const date = matches[0];
     const [d, m, y, h, min] = date.match(/[0-9]{1,4}/gi).slice(0,5);
     if (!isValidDate(+d, +m - 1, +y) || !isValidTime(+h, +min)) return null;
