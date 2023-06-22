@@ -1,10 +1,12 @@
-import { Telegraf } from 'telegraf';
+import { Telegraf, session } from 'telegraf';
 import * as dotenv from 'dotenv';
 import { sendCatPhoto } from './modules/catModule.js';
 import { sendDogPhoto } from './modules/dogModule.js';
 import { sendDescription } from './modules/helpModule.js';
 import { weatherComposer, weatherService } from './modules/weatherModule.js';
 import { BotContext } from 'interfaces.js';
+import { taskService, tasksComposer } from './modules/tasksModule.js';
+import { sceneComposer } from './scenes/index.js';
 
 dotenv.config()
 
@@ -12,13 +14,16 @@ const botToken = process.env.TELEGRAM_API_TOKEN as string;
 
 const bot = new Telegraf(botToken);
 
+bot.use(session());
 bot.use(weatherComposer);
+bot.use(tasksComposer);
+bot.use(sceneComposer);
 
 bot.start(async (ctx) => {
     await ctx.reply('👋');
     await ctx.reply(`Hello! I'm Alfred-bot, glad to see you.`);
     sendDescription(ctx);
-    console.log(ctx.from);
+    ctx.state.telegramId = ctx.from.id;
 })
 
 bot.command('cat', async (ctx) => {
@@ -37,6 +42,10 @@ bot.command('weather', async (ctx) => {
     await ctx.reply('You have selected a weather forecast by city name');
     weatherService(ctx as BotContext);
 });
+
+bot.command('tasks', async (ctx) => {
+    taskService(ctx as BotContext);
+})
 
 bot.launch();
 
