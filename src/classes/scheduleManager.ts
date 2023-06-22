@@ -1,11 +1,5 @@
 import schedule from 'node-schedule';
 
-const rule = new schedule.RecurrenceRule();
-
-const job = schedule.scheduleJob(rule, function () {
-    console.log('asdasd')
-})
-
 interface ScheduleElement<T> {
     id: T,
     job: schedule.Job,
