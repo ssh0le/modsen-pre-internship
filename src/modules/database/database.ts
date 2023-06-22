@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import * as dotenv from 'dotenv';
 import { Task, User } from "./models.js";
-import { DBUser } from "interfaces.js";
+import { DBTask, DBUser } from "interfaces.js";
 
 
 dotenv.config()
@@ -33,18 +33,24 @@ export async function createUser({telegramId, name, city}:{telegramId: number, n
     }
 }
 
-export async function getTasksByUserId (id: number) {
-    const tasks = await Task.find({
+export async function getTasksByUserId (id: ObjectId){
+    const tasks = await Task.find<DBTask>({
         userId: id,
     })
     return tasks;
 }
 
-export async function createTask ({userId, date, description}: {userId: string, date: Date, description: string}) {
+export async function createTask ({userId, date, description}: {userId: ObjectId, date: Date, description: string}) {
     const task = Task.create({
         userId,
         date,
         description,
     })
     console.log(task);
+}
+
+export async function deleteTask (taskId: string) {
+    Task.deleteOne({
+        _id: taskId,
+    }).then(res => console.log(res));
 }
