@@ -10,8 +10,6 @@ export const callbackActions = {
 };
 
 export const introduceSceneName = 'INTRODUCE';
-
-const START_SCENE_NAME = 'START_INTRODUCE';
 const GOOD_NAME = 'Nice to meet you, ';
 
 const yesNoKeyboard = Markup.keyboard([['Yes', 'No'], ['leave']]).oneTime().resize();
@@ -25,13 +23,6 @@ export const introduceComposer = new Composer<Scenes.WizardContext>();
 introduceComposer.action(callbackActions.yes, async (ctx) => {
     ctx.answerCbQuery();
     ctx.state.sceneNumber = 1;
-    console.log(ctx);
-});
-
-introduceComposer.action(callbackActions.no, async (ctx) => {
-    ctx.answerCbQuery();
-    ctx.state.sceneNumber = 2;
-    console.log('======================================');
     console.log(ctx);
 });
 

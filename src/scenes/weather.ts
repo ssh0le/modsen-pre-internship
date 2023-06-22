@@ -1,8 +1,8 @@
 import axios, { AxiosError } from "axios";
 import { createForecastMessage } from "../helpers/createForeacastMessage.js";
 import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
-import { isValidCityName } from "../helpers/isValidCityName.js";
-import { WeatherError } from "../interfaces.js";
+import { isValidName } from "../helpers/isValidCityName.js";
+import { BotContext, WeatherError } from "../interfaces.js";
 import { fetchWeatherForecatByCityName } from "../services/fetchWeather.js";
 import { Scenes, deunionize } from "telegraf";
 
@@ -10,6 +10,8 @@ export const callbackActions = {
     repeatSearch: 'REPEAT_SEARCH',
     leaveSearch: 'LEAVE_SEARCH',
 }
+
+export const weatherSceneName = 'WEATHER_SEARCH'
 
 const WRONG_NAME_MESSAGE = 'Wrong city name format. Please repeat:';
 const FETCHING_ERROR = 'Something went wrong during fetching weather.';
@@ -20,12 +22,8 @@ const repeatKeyboard = createInlineKeyboard([
     [{ text: 'Repeat', callback_data: callbackActions.repeatSearch }],
 ])
 
-const leaveSceneKeyboard = createInlineKeyboard([
-    [{ text: 'Leave', callback_data: callbackActions.leaveSearch }]
-])
-
-export const getWeatherScene = (name: string) => new Scenes.WizardScene(name, (ctx) => {
-    ctx.reply(ENTER_NAME_MESSAGE, { reply_markup: leaveSceneKeyboard });
+export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName, (ctx) => {
+    ctx.reply(ENTER_NAME_MESSAGE);
     ctx.wizard.next();
 },
     async (ctx) => {
@@ -34,8 +32,13 @@ export const getWeatherScene = (name: string) => new Scenes.WizardScene(name, (c
             return;
         }
         const { text } = deunionize(ctx.message);
-        if (text && !isValidCityName(text)) {
-            ctx.reply(WRONG_NAME_MESSAGE, { reply_markup: leaveSceneKeyboard });
+        if (text === 'leave') {
+            ctx.scene.leave();
+            ctx.reply('You are out of the weather search');
+            return;
+        }
+        if (text && !isValidName(text)) {
+            ctx.reply(WRONG_NAME_MESSAGE);
             ctx.wizard.selectStep(1);
             return;
         }
