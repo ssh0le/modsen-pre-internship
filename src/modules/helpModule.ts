@@ -1,4 +1,6 @@
-import { Context } from "telegraf";
+import { Context, Markup } from "telegraf";
+
+const removeKeyboard = Markup.removeKeyboard();
 
 export const sendDescription = async (ctx: Context) => {
     try {
@@ -8,9 +10,10 @@ export const sendDescription = async (ctx: Context) => {
             '/dog - Random dog photo',
             '/weather - Weather service',
             '/tasks - Tasks service',
-        ].join('\n'));
+            '/subscription - Weather subscription service',
+        ].join('\n'), removeKeyboard);
 
     } catch (e) {
-        ctx.reply('Unexpected error',);
+        ctx.reply('Unexpected error', removeKeyboard);
     }
 }

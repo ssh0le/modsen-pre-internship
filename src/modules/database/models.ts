@@ -11,3 +11,10 @@ export const Task = mongoose.model('Task', new mongoose.Schema({
     date: Date,
     userId: mongoose.SchemaTypes.ObjectId,
 }))
+
+export const Subscription = mongoose.model('Subscription', new mongoose.Schema({
+    userId: {type: mongoose.SchemaTypes.ObjectId, ref: 'User'},
+    time: {hours: Number, minutes: Number},
+    city: String,
+    chatId: Number,
+}))

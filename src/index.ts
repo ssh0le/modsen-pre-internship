@@ -5,8 +5,11 @@ import { sendDogPhoto } from './modules/dogModule.js';
 import { sendDescription } from './modules/helpModule.js';
 import { weatherComposer, weatherService } from './modules/weatherModule.js';
 import { BotContext } from 'interfaces.js';
-import { taskService, tasksComposer } from './modules/tasksModule.js';
+import { taskService} from './modules/tasksModule.js';
 import { sceneComposer } from './scenes/index.js';
+import { message } from 'telegraf/filters';
+import { subscriptionService } from './modules/subscriptionModule.js';
+import { restoreScheduledSubscriptions } from './scenes/subscription.js';
 
 dotenv.config()
 
@@ -16,7 +19,6 @@ const bot = new Telegraf(botToken);
 
 bot.use(session());
 bot.use(weatherComposer);
-bot.use(tasksComposer);
 bot.use(sceneComposer);
 
 bot.start(async (ctx) => {
@@ -47,7 +49,17 @@ bot.command('tasks', async (ctx) => {
     taskService(ctx as BotContext);
 })
 
+bot.command('subscription', async (ctx) => {
+    subscriptionService(ctx as BotContext);
+})
+
+bot.on(message('text'), async (ctx) => {
+    sendDescription(ctx)
+})
+
 bot.launch();
+
+restoreScheduledSubscriptions(bot);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
