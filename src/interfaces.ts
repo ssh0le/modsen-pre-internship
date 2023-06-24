@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { Context, Scenes, Telegraf } from "telegraf";
 import { Update } from "telegraf/types";
 
