@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { Context, Scenes, Telegraf } from "telegraf";
 import { Update } from "telegraf/types";
 
@@ -7,6 +7,15 @@ interface CustomSessionData extends Scenes.WizardSessionData{
         description?: string,
         date?: Date,
     },
+    taskNotification: {
+        id: string,
+    },
+    subscription: {
+        id: mongoose.Types.ObjectId | null,
+        city: string,
+        userId: mongoose.Types.ObjectId,
+        chatId: number,
+    }
 }
 
 export interface BotContext <U extends Update = Update> extends Context<U> {
@@ -69,16 +78,29 @@ export interface WeatherError {
     message: string,
 }
 
+export interface Time {
+    hours: number,
+    minutes: number,
+}
+
 export interface DBUser {
-    _id: ObjectId,
+    _id: mongoose.Types.ObjectId,
     telegramId: string,
     name: string,
     city: string,
 }
 
 export interface DBTask {
-    _id: ObjectId,
+    _id: mongoose.Types.ObjectId,
     description: string,
     userId: string,
     date: Date, 
+}
+
+export interface DBSubscription {
+    _id: mongoose.Types.ObjectId,
+    userId: mongoose.Types.ObjectId,
+    time: Time,
+    city: string,
+    chatId: number,
 }
