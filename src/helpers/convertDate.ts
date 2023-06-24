@@ -4,7 +4,8 @@ export const convertDate = (str: string): Date | null => {
     const date = matches[0];
     const [d, m, y, h, min] = date.match(/[0-9]{1,4}/gi).slice(0,5);
     if (!isValidDate(+d, +m - 1, +y) || !isValidTime(+h, +min)) return null;
-    return new Date(+y, +m - 1, +d, +h, +min);
+    const convertedDate = new Date(+y, +m - 1, +d, +h, +min);
+    return convertedDate > new Date() ? convertedDate : null;
 }
 
 const isValidDate = (d: number, m: number, y: number) => {
