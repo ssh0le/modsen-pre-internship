@@ -83,9 +83,9 @@ const readTime = async (ctx: BotContext) => {
         const sub = await createSubscription(userId, time, city, ctx.chat.id);
         ctx.scene.session.subscription.id = sub._id;
         subscriptionManager.addRecurrentJob(userId.toString(), time.hours, time.minutes, async () => {
-            ctx.reply(await makeForecast(city));
+            await ctx.reply(await makeForecast(city));
         })
-        ctx.reply('You have subscribed on daily weather foreacast!');
+        await ctx.reply('You have subscribed on daily weather foreacast!');
     }
     ctx.scene.reenter();
 }
@@ -115,8 +115,8 @@ subscriptionScene.action(actions.unsubscribe, async (ctx) => {
     const subscriptionId = ctx.scene.session.subscription.id;
     if (subscriptionId) {
         await deleteSubscription(subscriptionId);
-        await ctx.deleteMessage();
         await ctx.answerCbQuery('You unsubscribed');
+        await ctx.deleteMessage();
         await ctx.scene.reenter();
     }
 })

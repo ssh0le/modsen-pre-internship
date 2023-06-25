@@ -80,8 +80,8 @@ export async function createSubscription (userId: mongoose.Types.ObjectId, time:
 
 export async function deleteSubscription (subscriptionId: mongoose.Types.ObjectId) {
     try {
-        Subscription.deleteOne({
-            _id: subscriptionId,
+        await Subscription.deleteOne({
+            _id: subscriptionId.toString(),
         })
     } catch(e) {
         return null

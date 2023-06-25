@@ -92,7 +92,7 @@ const selectTask = async (ctx: BotContext) => {
             return;
         }
         ctx.reply(taskToString(tasks[taskId]), { reply_markup: makeTaskKeyboard(tasks[taskId]) });
-        return ctx.wizard.next();
+        return ctx.wizard.selectStep(6);
     } else {
         if (ctx.session.tasks) {
             ctx.reply('Wrong format of number', menuKeyboard);
@@ -114,8 +114,8 @@ const createTaskNotification = async (ctx: BotContext) => {
             ctx.deleteMessage();
             ctx.reply(`🔔 ${task.description}`);
         })
-        ctx.reply('Notification has been added for time:\n' + getFormattedFullDate(date));
-        ctx.scene.reenter();
+        await ctx.reply('Notification has been added for time:\n' + getFormattedFullDate(date));
+        await ctx.scene.reenter();
     }
 }
 
@@ -138,6 +138,9 @@ export const tasksScene = new Scenes.WizardScene<BotContext>(
     },
     async (ctx) => {
         await createTaskNotification(ctx);
+    },
+    async (ctx) => {
+        return ctx.wizard.next();
     },
     async (ctx) => {
         ctx.scene.reenter();
