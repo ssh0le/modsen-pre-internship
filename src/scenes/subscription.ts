@@ -93,12 +93,15 @@ const readTime = async (ctx: BotContext) => {
         ctx.wizard.selectStep(ctx.wizard.cursor - 1);
         return;
     }
+    const serverTime = Object.assign({}, time);
+    serverTime.hours -= 3;
+    if (serverTime.hours < 0) serverTime.hours += 24;
     const { city, userId } = ctx.scene.session.subscription;
     if (city && userId) {
-        const sub = await createSubscription(userId, time, city, ctx.chat.id);
+        const sub = await createSubscription(userId, serverTime, city, ctx.chat.id);
         console.log(sub);
         ctx.scene.session.subscription.id = sub._id;
-        subscriptionManager.addRecurrentJob(userId.toString(), time.hours, time.minutes, async () => {
+        subscriptionManager.addRecurrentJob(userId.toString(), serverTime.hours, serverTime.minutes, async () => {
             await ctx.reply(await makeForecast(city));
         })
         await ctx.reply('You have subscribed on daily weather foreacast!', leaveMenu);

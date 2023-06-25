@@ -107,10 +107,12 @@ const selectTask = async (ctx: BotContext) => {
 const createTaskNotification = async (ctx: BotContext) => {
     const date = await getDate(ctx);
     if (!date) return;
+    const serverDate = new Date(date);
+    serverDate.setHours(date.getHours() - 3)
     const { id } = ctx.scene.session.taskNotification;
     const [task]: DBTask[] = ctx.session.tasks.filter(t => t._id == id);
     if (task) {
-        notificationManager.addOneTimeJob(id, date, () => {
+        notificationManager.addOneTimeJob(id, serverDate, () => {
             ctx.deleteMessage();
             ctx.reply(`🔔 ${task.description}`);
         })
