@@ -1,5 +1,5 @@
 import { ScheduleManager } from "../classes/scheduleManager.js";
-import { Scenes, Telegraf, deunionize } from "telegraf";
+import { Markup, Scenes, Telegraf, deunionize } from "telegraf";
 import { BotContext, DBSubscription, DBUser } from "../interfaces.js";
 import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
 import { convertToTime } from "../helpers/convertToTime.js";
@@ -10,6 +10,12 @@ import { fetchWeatherForecatByCityName } from "../services/fetchWeather.js";
 
 export const subscriptionSceneName = 'SUBSCRIPTION_SCENE';
 
+const leaveMenu = Markup.keyboard([
+    ['leave']
+]).oneTime().resize();
+
+const removeKeyboard = Markup.removeKeyboard();
+
 
 const actions = {
     subscribe: 'SUBSCRIBE',
@@ -19,9 +25,9 @@ const actions = {
 const makeForecast = async (city: string) => {
     try {
         const data = await fetchWeatherForecatByCityName(city);
-        return "Today forecast:\n\n" + createForecastMessage(data);
+        return "Daily forecast subscription:\n\n" + createForecastMessage(data);
     } catch (e) {
-        return 'Foreact failed'
+        return 'Daily foreact failed'
     }
 }
 
@@ -61,43 +67,58 @@ const makeOnEnterMessage = async (subscription: DBSubscription) => {
 
 const readCity = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
-    if (text && !isValidName(text)) {
-        ctx.reply('Wrong city name format. Please repeat:');
-        ctx.wizard.selectStep(ctx.wizard.cursor);
-        return;
+    if (text) {
+        if (!isValidName(text)) {
+            ctx.reply('Wrong city name format. Please repeat:', leaveMenu);
+            ctx.wizard.selectStep(ctx.wizard.cursor - 1);
+            return;
+        }
+        try {
+            const data = await fetchWeatherForecatByCityName(text);
+        } catch (e) {
+            ctx.reply('City not found, pelase reenter: ', leaveMenu);
+            ctx.wizard.selectStep(ctx.wizard.cursor - 1);
+            return;
+        }
     }
     ctx.scene.session.subscription.city = text;
-    ctx.reply('Enter time for subscription: ')
+    ctx.reply('Enter time for subscription: ', leaveMenu)
 }
 
 const readTime = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const time = convertToTime(text);
     if (!time) {
-        ctx.reply('Wrong format of time. Please reenter: ');
-        ctx.wizard.selectStep(ctx.wizard.cursor);
+        ctx.reply('Wrong format of time. Please reenter: ', leaveMenu);
+        ctx.wizard.selectStep(ctx.wizard.cursor - 1);
         return;
     }
     const { city, userId } = ctx.scene.session.subscription;
     if (city && userId) {
         const sub = await createSubscription(userId, time, city, ctx.chat.id);
+        console.log(sub);
         ctx.scene.session.subscription.id = sub._id;
         subscriptionManager.addRecurrentJob(userId.toString(), time.hours, time.minutes, async () => {
             await ctx.reply(await makeForecast(city));
         })
-        await ctx.reply('You have subscribed on daily weather foreacast!');
+        await ctx.reply('You have subscribed on daily weather foreacast!', leaveMenu);
+        ctx.scene.reenter();
     }
-    ctx.scene.reenter();
 }
 
 export const subscriptionScene = new Scenes.WizardScene<BotContext>(
     subscriptionSceneName,
+    async (ctx) => {
+        ctx.reply('Type \'leave\' to leave', leaveMenu);
+        ctx.wizard.selectStep(ctx.wizard.cursor);
+    },
     async (ctx) => {
         await readCity(ctx);
         return ctx.wizard.next();
     },
     async (ctx) => {
         await readTime(ctx);
+        return ctx.wizard.next();
     },
     async (ctx) => {
         ctx.scene.reenter();
@@ -107,8 +128,8 @@ export const subscriptionScene = new Scenes.WizardScene<BotContext>(
 subscriptionScene.action(actions.subscribe, async (ctx) => {
     ctx.deleteMessage();
     ctx.answerCbQuery();
-    ctx.reply('Enter city name for subscription: ')
-    ctx.wizard.selectStep(0);
+    ctx.reply('Enter city name for subscription: ', leaveMenu)
+    ctx.wizard.selectStep(1);
 })
 
 subscriptionScene.action(actions.unsubscribe, async (ctx) => {
@@ -122,7 +143,7 @@ subscriptionScene.action(actions.unsubscribe, async (ctx) => {
 })
 
 subscriptionScene.hears('leave', async (ctx) => {
-    ctx.reply('You have left subscription service');
+    ctx.reply('You have left subscription service', removeKeyboard);
     ctx.scene.leave();
 })
 

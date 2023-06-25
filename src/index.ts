@@ -61,5 +61,7 @@ bot.launch();
 
 restoreScheduledSubscriptions(bot);
 
+console.log(new Date(), " ", new Date().getTimezoneOffset());
+
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
