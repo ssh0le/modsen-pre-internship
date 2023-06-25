@@ -53,6 +53,10 @@ bot.command('subscription', async (ctx) => {
     subscriptionService(ctx as BotContext);
 })
 
+bot.command('date', async (ctx) => {
+    ctx.reply(new Date().toString());
+})
+
 bot.on(message('text'), async (ctx) => {
     sendDescription(ctx)
 })
