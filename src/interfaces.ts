@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { Context, Scenes, Telegraf } from "telegraf";
 import { Update } from "telegraf/types";
 
-interface CustomSessionData extends Scenes.WizardSessionData{
+interface CustomSessionData extends Scenes.WizardSessionData {
     newTask: {
         description?: string,
         date?: Date,
@@ -15,16 +15,20 @@ interface CustomSessionData extends Scenes.WizardSessionData{
         city: string,
         userId: mongoose.Types.ObjectId,
         chatId: number,
+    },
+    places: {
+        city: string,
+        coords: Coords,
     }
 }
 
-export interface BotContext <U extends Update = Update> extends Context<U> {
+export interface BotContext<U extends Update = Update> extends Context<U> {
     session: any;
     scene: Scenes.SceneContextScene<BotContext, CustomSessionData>,
     wizard: Scenes.WizardContextWizard<BotContext>;
 }
 
-export type Bot = Telegraf<BotContext>; 
+export type Bot = Telegraf<BotContext>;
 
 export interface CatPhoto {
     id: string,
@@ -94,7 +98,7 @@ export interface DBTask {
     _id: mongoose.Types.ObjectId,
     description: string,
     userId: string,
-    date: Date, 
+    date: Date,
 }
 
 export interface DBSubscription {
@@ -103,4 +107,24 @@ export interface DBSubscription {
     time: Time,
     city: string,
     chatId: number,
+}
+
+
+
+export interface Coords {
+    lat: number,
+    lon: number,
+}
+
+export interface PlacesResponse {
+    next_page_token?: string
+    results: Place[]
+    status: string
+}
+
+export interface Place {
+    name: string,
+    place_id: string,
+    vicinity: string,
+    types: string[],
 }

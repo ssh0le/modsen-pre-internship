@@ -10,7 +10,8 @@ export const sendDescription = async (ctx: Context) => {
             '/dog - Random dog photo',
             '/weather - Weather service',
             '/tasks - Tasks service',
-            '/subscription - Weather subscription service',
+            '/subscription - Weather foreacast subscription service',
+            '/places - Places of interests service',
         ].join('\n'), removeKeyboard);
 
     } catch (e) {
