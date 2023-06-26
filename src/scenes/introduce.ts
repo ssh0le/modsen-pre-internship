@@ -34,7 +34,7 @@ export const introduceScene = new Scenes.WizardScene<BotContext>(
             return;
         }
         const { text } = deunionize(ctx.message);
-        if (!text.toLowerCase().includes('y') || !text.toLowerCase().includes('n')) {
+        if (!text.toLowerCase().includes('y') && !text.toLowerCase().includes('n')) {
             ctx.reply('I can\'t recognize your answer. Do you want to keep your nickname as name?');
             return ctx.wizard.selectStep(0);
         }

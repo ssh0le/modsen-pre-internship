@@ -63,9 +63,10 @@ export async function getSubscription (userId: mongoose.Types.ObjectId) {
         const subscription = await Subscription.findOne<DBSubscription>({
             userId,
         })
+        console.log(subscription);
         return subscription;
     } catch(e) {
-        return null
+        return null;
     }
 }
 
