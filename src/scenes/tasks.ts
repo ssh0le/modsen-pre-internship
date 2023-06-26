@@ -80,11 +80,6 @@ const selectTask = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const taskId = parseInt(text) - 1;
     if (Number.isInteger(taskId) && ctx.session.tasks) {
-        if (!ctx.session.tasks.length) {
-            ctx.reply('You don\'t have tasks to choose from');
-            ctx.scene.reenter();
-            return;
-        }
         const tasks: DBTask[] = ctx.session.tasks;
         if (taskId >= tasks.length || taskId < 0) {
             ctx.reply('I don\'t see the task with this id. Please reenter:', menuKeyboard);
@@ -124,7 +119,7 @@ const createTaskNotification = async (ctx: BotContext) => {
 export const tasksScene = new Scenes.WizardScene<BotContext>(
     tasksSceneName,
     async (ctx) => {
-        ctx.reply('Select operation:');
+        ctx.reply('Select operation');
         return ctx.wizard.selectStep(0);
     },
     async (ctx) => {
@@ -160,7 +155,7 @@ tasksScene.action(new RegExp(`^${actions.deleteTask}-[0-9a-z]*$`), async (ctx) =
 
 tasksScene.action(new RegExp(`^${actions.remindTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
-    ctx.scene.session.taskNotification = {id: taskId};
+    ctx.scene.session.taskNotification = { id: taskId };
     ctx.reply(`Enter date of notification in format ${dateFormat}:`)
     ctx.wizard.selectStep(4);
     ctx.deleteMessage();
@@ -186,7 +181,9 @@ tasksScene.hears('Add task', async (ctx) => {
 
 tasksScene.hears('Select task', async (ctx) => {
     if (!ctx.session.tasks || !ctx.session.tasks.length) {
-        return ctx.wizard.selectStep(3);
+        ctx.reply('You don\'t have tasks to choose from');
+        ctx.scene.reenter();
+        return;
     }
     ctx.reply('Enter number of the task: ', menuKeyboard);
     ctx.wizard.selectStep(3);
