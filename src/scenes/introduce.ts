@@ -1,8 +1,6 @@
-import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
 import { Composer, Markup, Scenes, deunionize } from "telegraf";
 import { createUser } from "../modules/database/database.js";
 import { BotContext } from "interfaces.js";
-import { BaseScene, Stage } from "telegraf/scenes";
 
 export const callbackActions = {
     yes: 'CHANGE_NAME_YES',
@@ -34,7 +32,7 @@ export const introduceScene = new Scenes.WizardScene<BotContext>(
             return;
         }
         const { text } = deunionize(ctx.message);
-        if (!text.toLowerCase().includes('y') && !text.toLowerCase().includes('n')) {
+        if (!text.toLowerCase().includes('yes') && !text.toLowerCase().includes('no')) {
             ctx.reply('I can\'t recognize your answer. Do you want to keep your nickname as name?');
             return ctx.wizard.selectStep(0);
         }

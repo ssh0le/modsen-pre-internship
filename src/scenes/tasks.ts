@@ -185,6 +185,9 @@ tasksScene.hears('Add task', async (ctx) => {
 })
 
 tasksScene.hears('Select task', async (ctx) => {
+    if (!ctx.session.tasks || !ctx.session.tasks.length) {
+        return ctx.wizard.selectStep(3);
+    }
     ctx.reply('Enter number of the task: ', menuKeyboard);
     ctx.wizard.selectStep(3);
 })
