@@ -146,8 +146,8 @@ subscriptionScene.action(actions.unsubscribe, async (ctx) => {
 })
 
 subscriptionScene.hears('leave', async (ctx) => {
-    ctx.reply('You have left subscription service', removeKeyboard);
-    ctx.scene.leave();
+    await ctx.reply('You have left subscription service', removeKeyboard);
+    await ctx.scene.leave();
 })
 
 subscriptionScene.enter(async (ctx) => {

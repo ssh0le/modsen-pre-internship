@@ -8,10 +8,10 @@ import { ScheduleManager } from "../classes/scheduleManager.js";
 import { getFormattedFullDate } from "../helpers/getFormattedFullDate.js";
 
 export const tasksSceneName = 'TASKS'
-const dateFormat = "DD/MM/YYYY HH:MM"
 
 const notificationManager = new ScheduleManager<string>();
 
+const dateFormat = "DD/MM/YYYY HH:MM";
 const actions = {
     deleteTask: 'DELETE_TASK',
     remindTask: 'REMIND_TASK',
@@ -194,8 +194,8 @@ tasksScene.hears('Menu', async (ctx) => {
 })
 
 tasksScene.hears('leave', async (ctx) => {
-    ctx.reply('You have left task service', removeKeyboard);
-    ctx.scene.leave();
+    await ctx.reply('You have left task service', removeKeyboard);
+    await ctx.scene.leave();
 })
 
 tasksScene.enter(async ctx => {

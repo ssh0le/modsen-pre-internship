@@ -21,6 +21,10 @@ bot.use(session());
 bot.use(weatherComposer);
 bot.use(sceneComposer);
 
+sceneComposer.hears('leave', async (ctx) => {
+    sendDescription(ctx);
+})
+
 bot.start(async (ctx) => {
     await ctx.reply('👋');
     await ctx.reply(`Hello! I'm Alfred-bot, glad to see you.`);
@@ -64,8 +68,6 @@ bot.on(message('text'), async (ctx) => {
 bot.launch();
 
 restoreScheduledSubscriptions(bot);
-
-console.log(new Date(), " ", new Date().getTimezoneOffset());
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
