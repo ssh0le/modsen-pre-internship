@@ -58,7 +58,11 @@ const makeOnEnterMessage = async (subscription: DBSubscription) => {
     let message = `Daily weather forecast subscription\n`;
     if (subscription) {
         message += `Your subscription:\n`
-        message += `City: ${subscription.city}\nTime: ${subscription.time.hours}:${String(subscription.time.minutes).padStart(2, "0")}`;
+        let hours = subscription.time.hours + 3;
+        if (hours > 23) {
+            hours -= 24;
+        }
+        message += `City: ${subscription.city}\nTime: ${hours}:${String(subscription.time.minutes).padStart(2, "0")}`;
     } else {
         message += 'You are not subscribed'
     }
@@ -155,6 +159,7 @@ subscriptionScene.enter(async (ctx) => {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
     const user: DBUser = ctx.session.user;
+    console.log(user);
     const subscription = await getSubscription(user._id);
     ctx.scene.session.subscription = { userId: user._id, city: undefined, id: subscription?._id, chatId: undefined };
     ctx.reply(await makeOnEnterMessage(subscription), { reply_markup: makeSubscribeKeyboard(subscription != null) });
