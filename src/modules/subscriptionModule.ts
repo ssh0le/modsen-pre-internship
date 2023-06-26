@@ -6,8 +6,8 @@ export const subscriptionService = async (ctx: BotContext) => {
     const user = await getUserByTelegramId(ctx.from.id);
     ctx.session.user = user;
     if (!user) {
-        ctx.scene.enter(sceneNames.subscription);
+        ctx.scene.enter(sceneNames.introduce);
     } else {
-        ctx.scene.enter(sceneNames.tasks);
+        ctx.scene.enter(sceneNames.subscription);
     }
 }
