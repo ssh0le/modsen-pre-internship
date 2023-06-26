@@ -106,5 +106,4 @@ placesScene.hears('leave', async (ctx) => {
 
 placesScene.enter(async ctx => {
     await ctx.reply('Enter the city name:');
-    return ctx.wizard.next();
 })
