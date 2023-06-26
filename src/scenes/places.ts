@@ -19,7 +19,6 @@ const makeTypesKeyboard = (types: string[]) => {
     for (let i = 0; i < types.length; i += 2) {
         const row = [];
         for (let j = 0; j < columnNumber; j++) {
-            console.log(types[i + j]);
             if (types[i + j]) {
                 row.push(types[i + j]);
             } else {
@@ -46,7 +45,6 @@ const readCityName = async (ctx: BotContext) => {
     }
     try {
         const cityCoords = await getCityCoords(text);
-        console.log(cityCoords);
         if (!cityCoords) throw cityCoords;
         ctx.reply('Select type:', makeTypesKeyboard(placeTypes));
         ctx.scene.session.places = { city: text, coords: cityCoords };
