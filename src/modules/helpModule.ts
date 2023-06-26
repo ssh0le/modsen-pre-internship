@@ -11,7 +11,7 @@ export const sendDescription = async (ctx: Context) => {
             '/weather - Weather service',
             '/tasks - Tasks service',
             '/subscription - Weather foreacast subscription service',
-            '/places - Places of interests service',
+            '/places - Places of interest service',
         ].join('\n'), removeKeyboard);
 
     } catch (e) {

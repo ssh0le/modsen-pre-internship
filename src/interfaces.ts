@@ -17,8 +17,13 @@ interface CustomSessionData extends Scenes.WizardSessionData {
         chatId: number,
     },
     places: {
-        city: string,
-        coords: Coords,
+        city?: string,
+        coords?: Coords,
+        keyword?: string,
+        type?: string,
+        currentPage?: number,
+        nextPageToken?: string,
+        list?: Place[],
     }
 }
 
