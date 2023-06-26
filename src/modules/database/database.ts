@@ -48,9 +48,14 @@ export async function createTask ({userId, date, description}: {userId: mongoose
 }
 
 export async function deleteTask (taskId: string) {
-    Task.deleteOne({
-        _id: taskId,
-    });
+    try {
+        const res = await Task.deleteOne({
+            _id: taskId,
+        });
+        console.log(res)
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 export async function getSubscription (userId: mongoose.Types.ObjectId) {
