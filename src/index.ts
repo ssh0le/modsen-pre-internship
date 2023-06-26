@@ -21,10 +21,6 @@ bot.use(session());
 bot.use(weatherComposer);
 bot.use(sceneComposer);
 
-sceneComposer.hears('leave', async (ctx) => {
-    sendDescription(ctx);
-})
-
 bot.start(async (ctx) => {
     await ctx.reply('👋');
     await ctx.reply(`Hello! I'm Alfred-bot, glad to see you.`);

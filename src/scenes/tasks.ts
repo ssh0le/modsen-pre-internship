@@ -194,7 +194,7 @@ tasksScene.hears('Menu', async (ctx) => {
 })
 
 tasksScene.hears('leave', async (ctx) => {
-    await ctx.reply('You have left task service', removeKeyboard);
+    await ctx.replyWithHTML('You have left task service. Type /help to select another service', removeKeyboard);
     await ctx.scene.leave();
 })
 

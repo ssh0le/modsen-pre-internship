@@ -70,5 +70,6 @@ introduceScene.enter(ctx => {
 })
 
 introduceScene.hears('leave', async (ctx) => {
+    await ctx.replyWithHTML('Type /help to select another service')
     await ctx.scene.leave();
 })

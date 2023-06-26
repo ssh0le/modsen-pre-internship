@@ -17,7 +17,8 @@ export const sceneComposer = new Composer();
 
 const stage  = new Scenes.Stage<BotContext>([weatherScene, introduceScene, tasksScene, subscriptionScene]);
 stage.hears('leave', async (ctx) => {
-    sendDescription(ctx);
+    await ctx.scene.leave();
+    await sendDescription(ctx);
 })
 sceneComposer.use(introduceComposer);
 
