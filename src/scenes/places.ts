@@ -96,6 +96,8 @@ const readPlaceType = async (ctx: BotContext) => {
         return;
     }
     sendPlacesByPage(ctx, results, 0, coords);
+    ctx.replyWithHTML('Type /help for more', removeKeyboard);
+    return ctx.scene.leave();
 }
 
 
