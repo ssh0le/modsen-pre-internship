@@ -1,8 +1,7 @@
-import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
 import { Composer, Markup, Scenes, deunionize } from "telegraf";
 import { createUser } from "../modules/database/database.js";
 import { BotContext } from "interfaces.js";
-import { BaseScene, Stage } from "telegraf/scenes";
+import { tasksSceneName } from "./tasks.js";
 
 export const callbackActions = {
     yes: 'CHANGE_NAME_YES',
@@ -10,20 +9,20 @@ export const callbackActions = {
 };
 
 export const introduceSceneName = 'INTRODUCE';
+
 const GOOD_NAME = 'Nice to meet you, ';
 
 const yesNoKeyboard = Markup.keyboard([['Yes', 'No'], ['leave']]).oneTime().resize();
 const removeKeyboard = Markup.removeKeyboard();
 
 const createEnterNameMessage = (nickname: string): string => {
-    return `Do you want keep this name \'${nickname}?\'`;
+    return `Do you want to keep this name \'${nickname}\'?`;
 };
 
 export const introduceComposer = new Composer<Scenes.WizardContext>();
 introduceComposer.action(callbackActions.yes, async (ctx) => {
     ctx.answerCbQuery();
     ctx.state.sceneNumber = 1;
-    console.log(ctx);
 });
 
 export const introduceScene = new Scenes.WizardScene<BotContext>(
@@ -34,7 +33,7 @@ export const introduceScene = new Scenes.WizardScene<BotContext>(
             return;
         }
         const { text } = deunionize(ctx.message);
-        if (!text.toLowerCase().includes('y') || !text.toLowerCase().includes('n')) {
+        if (!text.toLowerCase().includes('yes') && !text.toLowerCase().includes('no')) {
             ctx.reply('I can\'t recognize your answer. Do you want to keep your nickname as name?');
             return ctx.wizard.selectStep(0);
         }
@@ -58,11 +57,10 @@ export const introduceScene = new Scenes.WizardScene<BotContext>(
         const { text } = deunionize(ctx.message);
         try {
             await createUser({ telegramId: ctx.from.id, name: text, city: undefined });
-            ctx.reply(GOOD_NAME + text);
+            await ctx.reply(GOOD_NAME + text);
+            ctx.scene.enter(tasksSceneName);
         } catch (e) {
             console.log(e);
-        } finally {
-            ctx.scene.leave();
         }
     }
 );
@@ -72,5 +70,6 @@ introduceScene.enter(ctx => {
 })
 
 introduceScene.hears('leave', async (ctx) => {
-    ctx.scene.leave();
+    await ctx.replyWithHTML('Type /help to select another service')
+    await ctx.scene.leave();
 })

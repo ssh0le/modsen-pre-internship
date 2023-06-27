@@ -1,8 +1,6 @@
-import { Context, Composer, Scenes, session, deunionize, Telegraf, NarrowedContext } from "telegraf";
-import { BotContext, WeatherError } from "interfaces.js";
+import {  Composer, Scenes} from "telegraf";
+import { BotContext,} from "interfaces.js";
 import { weatherScene, callbackActions, weatherSceneName } from "../scenes/weather.js";
-import { CallbackQuery, Update } from "telegraf/types";
-import { Stage } from "telegraf/scenes";
 
 
 const stage = new Scenes.Stage<BotContext>([weatherScene]);

@@ -10,6 +10,7 @@ import { sceneComposer } from './scenes/index.js';
 import { message } from 'telegraf/filters';
 import { subscriptionService } from './modules/subscriptionModule.js';
 import { restoreScheduledSubscriptions } from './scenes/subscription.js';
+import { placesService } from './modules/placesModule.js';
 
 dotenv.config()
 
@@ -53,8 +54,8 @@ bot.command('subscription', async (ctx) => {
     subscriptionService(ctx as BotContext);
 })
 
-bot.command('date', async (ctx) => {
-    ctx.reply(new Date().toString());
+bot.command('places', async (ctx) => {
+    placesService(ctx as BotContext);
 })
 
 bot.on(message('text'), async (ctx) => {
@@ -64,8 +65,6 @@ bot.on(message('text'), async (ctx) => {
 bot.launch();
 
 restoreScheduledSubscriptions(bot);
-
-console.log(new Date(), " ", new Date().getTimezoneOffset());
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

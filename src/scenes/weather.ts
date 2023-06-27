@@ -34,7 +34,7 @@ export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
         const { text } = deunionize(ctx.message);
         if (text === 'leave') {
             ctx.scene.leave();
-            ctx.reply('You are out of the weather search');
+            ctx.replyWithHTML('You are out of the weather search. Type /help to select another service');
             return;
         }
         if (text && !isValidName(text)) {
