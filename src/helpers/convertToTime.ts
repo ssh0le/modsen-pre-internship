@@ -1,4 +1,4 @@
-import { Time } from "../interfaces.js";
+import { Time } from "../interfaces/interfaces.js";
 
 export const convertToTime = (time: string): Time | null => {
     const digits = time.match(/[0-2]?[0-9]?.*[0-6]?[0-9]?/)[0]?.match(/[0-9]{1,2}/g);

@@ -1,0 +1,1 @@
+export const isInArrayRange = (value: number, max: number) => value >= 0 && value < max; 
