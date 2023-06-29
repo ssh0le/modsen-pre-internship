@@ -7,7 +7,7 @@ import { tryCatchWrapper } from "@/helpers/tryCatchWrapper.js";
 mongoose.connect(dbUrl);
 
 export async function getUserByTelegramId(id: number) {
-    return await tryCatchWrapper<DBUser>(async () => await User.findOne<DBUser>({ telegramId: id }))
+    return await tryCatchWrapper<DBUser>(User.findOne<DBUser>({ telegramId: id }))
 }
 
 export async function createUser({ telegramId, name, city }: { telegramId: number, name: string, city: string | undefined }) {
@@ -48,22 +48,20 @@ export async function deleteTask(taskId: string) {
 }
 
 export async function getSubscription(userId: mongoose.Types.ObjectId) {
-    return await tryCatchWrapper(async () => {
-        await Subscription.findOne<DBSubscription>({
-            userId,
+    return await tryCatchWrapper<DBSubscription>(
+        Subscription.findOne<DBSubscription>({
+            userId
         })
-    })
+    )
 }
 
 export async function createSubscription(userId: mongoose.Types.ObjectId, time: Time, city: string, chatId: number) {
-    return await tryCatchWrapper(async () => {
-        return await Subscription.create<DBSubscription>({
-            userId,
-            time,
-            city,
-            chatId,
-        })
-    })
+    await tryCatchWrapper(Subscription.create<DBSubscription>({
+        userId,
+        time,
+        city,
+        chatId,
+    }))
 }
 
 export async function deleteSubscription(subscriptionId: mongoose.Types.ObjectId) {

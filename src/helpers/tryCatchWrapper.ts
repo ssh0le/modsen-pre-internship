@@ -1,4 +1,4 @@
-export const tryCatchWrapper = async <T>(func: () => Promise<T>) => {
+export const tryCatchWrapper = async <T>(func: Promise<T>) => {
     try {
         return await func;
     }
