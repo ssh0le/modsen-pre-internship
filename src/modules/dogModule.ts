@@ -1,11 +1,11 @@
 import axios from "axios";
-import { DogPhoto } from "interfaces.js";
-import * as dotenv from 'dotenv';
+import { DogPhoto } from "@/interfaces/interfaces.js";
 import { Context } from "telegraf";
+import { dogApiUrl } from "@/config.js";
 
-dotenv.config()
-
-const dogApiUrl = process.env.DOG_API_URL as string
+const messages = {
+    fetchError: 'Failed to upload dog photo',
+}
 
 export const sendDogPhoto = async (ctx: Context) => {
     try {
@@ -15,7 +15,7 @@ export const sendDogPhoto = async (ctx: Context) => {
         } else {
             throw response.data.status;
         }
-    } catch (e) {   
-        ctx.reply('Failed to upload dog photo',);
+    } catch (e) {
+        ctx.reply(messages.fetchError);
     }
 }

@@ -1,6 +1,6 @@
-import { BotContext } from "interfaces.js"
-import { sceneNames } from "../scenes/index.js";
-import { getUserByTelegramId } from "./database/database.js";
+import { BotContext } from "@/interfaces/interfaces.js"
+import { sceneNames } from "@/scenes/index.js";
+import { getUserByTelegramId } from "@/modules/index.js";
 
 export const subscriptionService = async (ctx: BotContext) => {
     const user = await getUserByTelegramId(ctx.from.id);
