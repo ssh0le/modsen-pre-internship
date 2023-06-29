@@ -1,20 +1,11 @@
+import 'module-alias/register';
 import { Telegraf, session } from 'telegraf';
-import * as dotenv from 'dotenv';
-import { sendCatPhoto } from './modules/catModule.js';
-import { sendDogPhoto } from './modules/dogModule.js';
-import { sendDescription } from './modules/helpModule.js';
-import { weatherComposer, weatherService } from './modules/weatherModule.js';
-import { BotContext } from 'interfaces.js';
-import { taskService} from './modules/tasksModule.js';
-import { sceneComposer } from './scenes/index.js';
+import { BotContext } from '@/interfaces/interfaces.js';
+import { sceneComposer } from '@/scenes/index.js';
 import { message } from 'telegraf/filters';
-import { subscriptionService } from './modules/subscriptionModule.js';
-import { restoreScheduledSubscriptions } from './scenes/subscription.js';
-import { placesService } from './modules/placesModule.js';
-
-dotenv.config()
-
-const botToken = process.env.TELEGRAM_API_TOKEN as string;
+import { restoreScheduledSubscriptions } from '@/scenes/subscription.js';
+import { botToken } from './config.js';
+import { placesService, sendCatPhoto, sendDescription, sendDogPhoto, subscriptionService, taskService, weatherComposer, weatherService } from './modules/index.js';
 
 const bot = new Telegraf(botToken);
 
@@ -30,11 +21,13 @@ bot.start(async (ctx) => {
 })
 
 bot.command('cat', async (ctx) => {
-    sendCatPhoto(ctx);
+    await sendCatPhoto(ctx);
+    sendDescription(ctx);
 });
 
 bot.command('dog', async (ctx) => {
-    sendDogPhoto(ctx);
+    await sendDogPhoto(ctx);
+    await sendDescription(ctx);
 });
 
 bot.command('help', async (ctx) => {
