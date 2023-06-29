@@ -1,34 +1,54 @@
-import { BotContext, DBTask, DBUser } from "../interfaces.js";
+import { ScheduleManager } from "@/classes/scheduleManager.js";
+import { BotContext, DBTask, DBUser } from "@/interfaces/interfaces.js";
 import { Markup, Scenes, deunionize } from "telegraf";
-import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "../modules/database/database.js";
-import { convertDate } from "../helpers/convertDate.js";
-import { taskToString } from "../helpers/tasksToString.js";
-import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
-import { ScheduleManager } from "../classes/scheduleManager.js";
-import { getFormattedFullDate } from "../helpers/getFormattedFullDate.js";
-
+import { convertDate, createInlineKeyboard, getFormattedFullDate, isInArrayRange, taskListToString, taskToString } from "@/helpers/index.js";
+import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "@/modules/database/database.js";
 export const tasksSceneName = 'TASKS'
 
 const notificationManager = new ScheduleManager<string>();
 
 const dateFormat = "DD/MM/YYYY HH:MM";
+
 const actions = {
     deleteTask: 'DELETE_TASK',
     remindTask: 'REMIND_TASK',
     cancelRemindTask: 'CANCEL_REMIND_TASK'
 }
 
+const messages = {
+    onenter: 'Type /leave to leave from service',
+    wrongDate: 'Wrong date format, try again:',
+    listHeader: 'Your Tasks:',
+    wrongTaskId: 'I don\'t see the task with this id. Please reenter:',
+    wrongTaskIdFormat: 'Wrong format of number, please reenter:',
+    refreshing: 'Refreshing...',
+    notificationIsCreated: 'Notification has been added for this date:\n',
+    askToSelectOperation: 'Select operation',
+    askToEnterDate: `Enter date in format ${dateFormat}:`,
+    taskDeleted: 'Task has been deleted',
+    askForDate: `Enter date of notification in format ${dateFormat}:`,
+    notificationCanceled: 'Notification has been cancelled',
+    askToEnterDescription: 'Enter description: ',
+    noTaskToChoose: 'You don\'t have tasks to choose from',
+    noTask: 'You have no tasks',
+    askToSelectTask: 'Enter number of the task: ',
+}
+
+const options = {
+    addTask: 'Add task',
+    selectTask: 'Select task',
+    menu: 'Menu',
+}
+
 const optionsKeyboard = Markup.keyboard([
-    ['Add task'],
-    ['Select task'],
+    [options.addTask],
+    [options.selectTask],
     ['leave'],
 ]).oneTime().resize();
 
 const menuKeyboard = Markup.keyboard([
     ['Menu'],
 ]).oneTime().resize();
-
-const removeKeyboard = Markup.removeKeyboard();
 
 const makeTaskKeyboard = (task: DBTask) => {
     const has = notificationManager.hasJob(task._id.toString());
@@ -47,7 +67,7 @@ const getDate = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const date = convertDate(text);
     if (!date) {
-        await ctx.reply('Wrong date format, try again:', menuKeyboard);
+        await ctx.reply(messages.wrongDate, menuKeyboard);
         ctx.wizard.selectStep(ctx.wizard.cursor);
         return null;
     }
@@ -70,7 +90,6 @@ const readDateCreateTask = async (ctx: BotContext) => {
         await createTask({ userId: user._id, description, date });
         ctx.scene.reenter();
     } catch (e) {
-        console.log(e);
         ctx.wizard.selectStep(ctx.wizard.cursor);
         ctx.scene.leave();
     }
@@ -81,8 +100,8 @@ const selectTask = async (ctx: BotContext) => {
     const taskId = parseInt(text) - 1;
     if (Number.isInteger(taskId) && ctx.session.tasks) {
         const tasks: DBTask[] = ctx.session.tasks;
-        if (taskId >= tasks.length || taskId < 0) {
-            ctx.reply('I don\'t see the task with this id. Please reenter:', menuKeyboard);
+        if (!isInArrayRange(taskId, tasks.length)) {
+            ctx.reply(messages.wrongTaskId, menuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
             return;
         }
@@ -90,10 +109,10 @@ const selectTask = async (ctx: BotContext) => {
         return ctx.wizard.selectStep(6);
     } else {
         if (ctx.session.tasks) {
-            ctx.reply('Wrong format of number', menuKeyboard);
+            ctx.reply(messages.wrongTaskIdFormat, menuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
         } else {
-            ctx.reply('Refreshing...')
+            ctx.reply(messages.refreshing)
             ctx.scene.reenter();
         }
     }
@@ -111,7 +130,7 @@ const createTaskNotification = async (ctx: BotContext) => {
             ctx.deleteMessage();
             ctx.reply(`🔔 ${task.description}`);
         })
-        await ctx.reply('Notification has been added for time:\n' + getFormattedFullDate(date));
+        await ctx.reply(`${messages.notificationIsCreated}${getFormattedFullDate(date)}`);
         await ctx.scene.reenter();
     }
 }
@@ -119,12 +138,12 @@ const createTaskNotification = async (ctx: BotContext) => {
 export const tasksScene = new Scenes.WizardScene<BotContext>(
     tasksSceneName,
     async (ctx) => {
-        ctx.reply('Select operation');
+        ctx.reply(messages.askToSelectOperation);
         return ctx.wizard.selectStep(0);
     },
     async (ctx) => {
         await readDescription(ctx);
-        await ctx.reply(`Date in format ${dateFormat}:`, menuKeyboard);
+        await ctx.reply(messages.askToEnterDate, menuKeyboard);
         return ctx.wizard.next();
     },
     async (ctx) => {
@@ -144,23 +163,31 @@ export const tasksScene = new Scenes.WizardScene<BotContext>(
     }
 );
 
+// Following regexp's describe 'Type of action' and 'Task id' like that: `${typeOfAction}-${taskId}` 
+
+// example: 'DELETE_TASK-542c2b97bac0595474108b48'
+
 tasksScene.action(new RegExp(`^${actions.deleteTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
     await deleteTask(taskId);
-    ctx.answerCbQuery('Task has been deleted');
+    ctx.answerCbQuery(messages.taskDeleted);
     notificationManager.cancelJob(taskId);
     ctx.deleteMessage();
     ctx.scene.enter(tasksSceneName);
 })
 
+// example: 'REMIND_TASK-542c2b97bac0595474108b48'
+
 tasksScene.action(new RegExp(`^${actions.remindTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
     ctx.scene.session.taskNotification = { id: taskId };
-    ctx.reply(`Enter date of notification in format ${dateFormat}:`)
+    ctx.reply(messages.askForDate);
     ctx.wizard.selectStep(4);
     ctx.deleteMessage();
     ctx.answerCbQuery();
 })
+
+// example: 'CANCEL_REMIND_TASK-542c2b97bac0595474108b48'
 
 tasksScene.action(new RegExp(`^${actions.cancelRemindTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
@@ -171,35 +198,31 @@ tasksScene.action(new RegExp(`^${actions.cancelRemindTask}-[0-9a-z]*$`), async (
         notificationManager.cancelJob(taskId)
         ctx.editMessageReplyMarkup(makeTaskKeyboard(task));
     }
-    ctx.answerCbQuery('Notification has been cancelled');
+    ctx.answerCbQuery(messages.notificationCanceled);
 })
 
-tasksScene.hears('Add task', async (ctx) => {
-    ctx.reply('Enter description: ', menuKeyboard);
+tasksScene.hears(options.addTask, async (ctx) => {
+    ctx.reply(messages.askToEnterDescription, menuKeyboard);
     ctx.wizard.selectStep(1);
 })
 
-tasksScene.hears('Select task', async (ctx) => {
+tasksScene.hears(options.selectTask, async (ctx) => {
     if (!ctx.session.tasks || !ctx.session.tasks.length) {
-        ctx.reply('You don\'t have tasks to choose from');
+        ctx.reply(messages.noTaskToChoose);
         ctx.scene.reenter();
         return;
     }
-    ctx.reply('Enter number of the task: ', menuKeyboard);
+    ctx.reply(messages.askToSelectTask, menuKeyboard);
     ctx.wizard.selectStep(3);
 })
 
-tasksScene.hears('Menu', async (ctx) => {
+tasksScene.hears(options.menu, async (ctx) => {
     ctx.scene.reenter();
 })
 
-tasksScene.hears('leave', async (ctx) => {
-    await ctx.replyWithHTML('You have left task service. Type /help to select another service', removeKeyboard);
-    await ctx.scene.leave();
-})
-
 tasksScene.enter(async ctx => {
-    await ctx.reply('Your Tasks:', optionsKeyboard);
+    ctx.reply(messages.onenter);
+    await ctx.reply(messages.listHeader, optionsKeyboard);
     if (ctx.session.user) {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
@@ -207,12 +230,8 @@ tasksScene.enter(async ctx => {
     ctx.session.tasks = await getTasksByUserId(user._id);
     const tasks: DBTask[] = ctx.session.tasks;
     if (tasks.length) {
-        let result = '';
-        for (let i = 0; i < tasks.length; i++) {
-            result += `${i + 1}. ${taskToString(tasks[i])}\n\n`;
-        }
-        await ctx.reply(result.trimEnd())
+        await ctx.reply(taskListToString(tasks).trimEnd())
     } else {
-        ctx.reply('You have no tasks');
+        ctx.reply(messages.noTask);
     }
 })

@@ -2,9 +2,9 @@ import { Composer, Scenes } from "telegraf";
 import { introduceComposer, introduceSceneName, introduceScene } from "./introduce.js";
 import { weatherSceneName, weatherScene  } from "./weather.js";
 import { subscriptionScene, subscriptionSceneName } from "./subscription.js";
-import { BotContext } from "interfaces.js";
+import { BotContext } from "@/interfaces/interfaces.js";
 import { tasksScene, tasksSceneName } from "./tasks.js";
-import { sendDescription } from '../modules/helpModule.js';
+import { sendDescription } from '@/modules/helpModule.js';
 import { placesSceneName, placesScene } from "./places.js";
 
 export const sceneNames = {
@@ -15,11 +15,20 @@ export const sceneNames = {
     places: placesSceneName
 }
 
+const commands = {
+    leave: 'leave',
+}
+
 export const sceneComposer = new Composer();
 
 const stage  = new Scenes.Stage<BotContext>([weatherScene, introduceScene, tasksScene, subscriptionScene, placesScene]);
 
-stage.hears('leave', async (ctx) => {
+stage.hears(commands.leave, async (ctx) => {
+    await ctx.scene.leave();
+    await sendDescription(ctx);
+})
+
+stage.command(commands.leave, async (ctx) => {
     await ctx.scene.leave();
     await sendDescription(ctx);
 })

@@ -1,44 +1,41 @@
 import axios, { AxiosError } from "axios";
-import { createForecastMessage } from "../helpers/createForeacastMessage.js";
-import { createInlineKeyboard } from "../helpers/createInlineKeyboard.js";
-import { isValidName } from "../helpers/isValidCityName.js";
-import { BotContext, WeatherError } from "../interfaces.js";
-import { fetchWeatherForecatByCityName } from "../services/fetchWeather.js";
+import { BotContext, WeatherError } from "@/interfaces/interfaces.js";
+import { fetchWeatherForecatByCityName } from "@/services/index.js";
 import { Scenes, deunionize } from "telegraf";
+import { createForecastMessage, createInlineKeyboard, isValidName } from "@/helpers/index.js";
 
 export const callbackActions = {
     repeatSearch: 'REPEAT_SEARCH',
     leaveSearch: 'LEAVE_SEARCH',
 }
 
-export const weatherSceneName = 'WEATHER_SEARCH'
+export const weatherSceneName = 'WEATHER_SEARCH';
 
-const WRONG_NAME_MESSAGE = 'Wrong city name format. Please repeat:';
-const FETCHING_ERROR = 'Something went wrong during fetching weather.';
-const ENTER_NAME_MESSAGE = 'Please, enter a city name:';
-const UNKNOWN_ERROR_MESSAGE = 'Unknown error';
+const messages = {
+    wrongCityName: 'Wrong city name format. Please repeat:',
+    fetchError: 'Something went wrong during fetching weather.',
+    askForCity: 'Please, enter a city name:',
+    unknownError: 'Unknown error',
+    onenter: 'Type /leave to leave',
+}
 
 const repeatKeyboard = createInlineKeyboard([
     [{ text: 'Repeat', callback_data: callbackActions.repeatSearch }],
 ])
 
-export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName, (ctx) => {
-    ctx.reply(ENTER_NAME_MESSAGE);
-    ctx.wizard.next();
-},
+export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
+    (ctx) => {
+        ctx.reply(messages.askForCity);
+        ctx.wizard.next();
+    },
     async (ctx) => {
         if (!ctx.message) {
             ctx.scene.leave();
             return;
         }
         const { text } = deunionize(ctx.message);
-        if (text === 'leave') {
-            ctx.scene.leave();
-            ctx.replyWithHTML('You are out of the weather search. Type /help to select another service');
-            return;
-        }
         if (text && !isValidName(text)) {
-            ctx.reply(WRONG_NAME_MESSAGE);
+            ctx.reply(messages.wrongCityName);
             ctx.wizard.selectStep(1);
             return;
         }
@@ -52,13 +49,17 @@ export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
                 const error = e as AxiosError;
                 if (error.response) {
                     const { message } = error.response.data as WeatherError;
-                    ctx.reply(message.charAt(0).toUpperCase() + message.slice(1), { reply_markup: repeatKeyboard });
+                    ctx.reply(`${message.charAt(0).toUpperCase()}${message.slice(1)}`, { reply_markup: repeatKeyboard });
                 } else {
-                    ctx.reply(FETCHING_ERROR, { reply_markup: repeatKeyboard });
+                    ctx.reply(messages.fetchError, { reply_markup: repeatKeyboard });
                 }
             } else {
-                ctx.reply(UNKNOWN_ERROR_MESSAGE, { reply_markup: repeatKeyboard });
+                ctx.reply(messages.unknownError, { reply_markup: repeatKeyboard });
             }
             ctx.scene.leave();
         }
     })
+
+weatherScene.enter(async ctx => {
+    await ctx.replyWithHTML(messages.onenter);
+});
