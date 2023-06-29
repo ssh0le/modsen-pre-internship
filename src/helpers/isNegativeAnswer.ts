@@ -1,0 +1,1 @@
+export const isNegativeAnswer = ( answer: string ) => ['no', 'nah'].includes(answer.toLocaleLowerCase());

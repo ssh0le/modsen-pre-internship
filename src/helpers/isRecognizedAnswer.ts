@@ -1,0 +1,1 @@
+export const isRecognizedAnswer = (text: string) => !(!text.toLowerCase().includes('yes') && !text.toLowerCase().includes('no'));
