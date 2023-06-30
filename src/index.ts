@@ -1,9 +1,12 @@
 import { Telegraf, session } from 'telegraf';
+import * as dotenv from 'dotenv';
 import { BotContext } from '@interfaces/interfaces.js';
 import { restoreScheduledSubscriptions, sceneComposer } from '@scenes/index.js';
 import { message } from 'telegraf/filters';
 import { botToken } from './config.js';
 import { placesService, sendCatPhoto, sendDescription, sendDogPhoto, subscriptionService, taskService, weatherComposer, weatherService } from '@modules/index.js';
+
+dotenv.config();
 
 const bot = new Telegraf(botToken);
 
