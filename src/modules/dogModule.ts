@@ -11,11 +11,11 @@ export const sendDogPhoto = async (ctx: Context) => {
     try {
         const response = await axios.get<DogPhoto>(dogApiUrl);
         if (response.data.status === 'success') {
-            ctx.replyWithPhoto(response.data.message);
+            await ctx.replyWithPhoto(response.data.message);
         } else {
             throw response.data.status;
         }
     } catch (e) {
-        ctx.reply(messages.fetchError);
+        await ctx.reply(messages.fetchError);
     }
 }

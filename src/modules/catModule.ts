@@ -10,7 +10,7 @@ const messages = {
 export const sendCatPhoto = async (ctx: Context) => {
     try {
         const response = await axios.get<CatPhoto[]>(catApiUrl);
-        ctx.replyWithPhoto(response.data[0].url);
+        await ctx.replyWithPhoto(response.data[0].url);
     } catch (e) {
         ctx.reply(messages.fetchError)
     }
