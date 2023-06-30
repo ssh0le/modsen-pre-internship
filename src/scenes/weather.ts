@@ -24,7 +24,8 @@ const repeatKeyboard = createInlineKeyboard([
 ])
 
 export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
-    (ctx) => {
+    async (ctx) => {
+        await ctx.replyWithHTML(messages.onenter);
         ctx.reply(messages.askForCity);
         ctx.wizard.next();
     },
@@ -59,7 +60,3 @@ export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
             ctx.scene.leave();
         }
     })
-
-weatherScene.enter(async ctx => {
-    await ctx.replyWithHTML(messages.onenter);
-});

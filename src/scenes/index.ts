@@ -6,6 +6,7 @@ import { BotContext } from "@/interfaces/interfaces.js";
 import { tasksScene, tasksSceneName } from "./tasks.js";
 import { sendDescription } from '@/modules/helpModule.js';
 import { placesSceneName, placesScene } from "./places.js";
+export * from './subscription.js'
 
 export const sceneNames = {
     introduce: introduceSceneName,

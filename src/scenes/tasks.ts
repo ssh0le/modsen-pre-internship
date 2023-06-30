@@ -221,7 +221,7 @@ tasksScene.hears(options.menu, async (ctx) => {
 })
 
 tasksScene.enter(async ctx => {
-    ctx.reply(messages.onenter);
+    await ctx.reply(messages.onenter);
     await ctx.reply(messages.listHeader, optionsKeyboard);
     if (ctx.session.user) {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);

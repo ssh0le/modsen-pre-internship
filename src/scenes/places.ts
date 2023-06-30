@@ -8,11 +8,11 @@ import { fetchPlaces, getCityCoords } from "@/services/index.js";
 export const placesSceneName = 'PLACES';
 
 const messages = {
-    leaveHint: 'Type "leave" to leave from service',
-    onenter: 'Type /leave to leave from service',
+    leaveHint: 'Type /leave to leave from service',
+    onenter: 'Enter the city name:',
     onleave: 'Type /help for more',
     noPlaces: 'No available places of interest in this city',
-    invalidCity: 'No available places of interest in this city',
+    invalidCity: 'Not valid city name',
     askToSelectType: 'Select type:',
     wrongType: 'Please select type from given list:',
     cityNotFound: 'City with such name wasn\'t found, please reenter:',
@@ -87,7 +87,7 @@ export const placesScene = new Scenes.WizardScene<BotContext>(
 );
 
 placesScene.enter(async ctx => {
-    await ctx.replyWithHTML(messages.onenter);
     await ctx.reply(messages.leaveHint, leaveKeyboard);
+    await ctx.replyWithHTML(messages.onenter);
     ctx.scene.session.places = {};
 })
