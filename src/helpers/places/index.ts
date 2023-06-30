@@ -35,13 +35,11 @@ export const makePlaceKeyboard = (placeId: string, coords: Coords) => {
 }
 
 export const sendPlacesByPage = async (ctx: BotContext, list: Place[], page: number, coords: Coords, placesPerPage: number) => {
-    const messages = [];
-    list.slice(page * placesPerPage, placesPerPage).forEach((place) => {
-        messages.push(new Promise(() => {
-            ctx.reply(placeToString(place), makePlaceKeyboard(place.place_id, coords));
-        }))
-    })
-    await Promise.all(messages);
+    const places = list.slice(page * placesPerPage, placesPerPage);
+    for (let i = 0; i < places.length; i++) {
+        const place = places[i];
+        await ctx.reply(placeToString(place), makePlaceKeyboard(place.place_id, coords));
+    }
 }
 
 const placeToString = (place: Place) => {
