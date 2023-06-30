@@ -1,11 +1,9 @@
-import 'module-alias/register.js';
 import { Telegraf, session } from 'telegraf';
-import { BotContext } from '@/interfaces/interfaces.js';
-import { sceneComposer } from '@/scenes/index.js';
+import { BotContext } from '@interfaces/interfaces.js';
+import { restoreScheduledSubscriptions, sceneComposer } from '@scenes/index.js';
 import { message } from 'telegraf/filters';
-import { restoreScheduledSubscriptions } from '@/scenes/subscription.js';
 import { botToken } from './config.js';
-import { placesService, sendCatPhoto, sendDescription, sendDogPhoto, subscriptionService, taskService, weatherComposer, weatherService } from './modules/index.js';
+import { placesService, sendCatPhoto, sendDescription, sendDogPhoto, subscriptionService, taskService, weatherComposer, weatherService } from '@modules/index.js';
 
 const bot = new Telegraf(botToken);
 
