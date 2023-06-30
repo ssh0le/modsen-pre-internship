@@ -56,7 +56,7 @@ export async function getSubscription(userId: mongoose.Types.ObjectId) {
 }
 
 export async function createSubscription(userId: mongoose.Types.ObjectId, time: Time, city: string, chatId: number) {
-    await tryCatchWrapper(Subscription.create<DBSubscription>({
+    return await tryCatchWrapper<DBSubscription>(Subscription.create<DBSubscription>({
         userId,
         time,
         city,
