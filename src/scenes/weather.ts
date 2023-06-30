@@ -11,12 +11,17 @@ export const callbackActions = {
 
 export const weatherSceneName = 'WEATHER_SEARCH';
 
+const commands = {
+    leave: 'leave',
+}
+
 const messages = {
     wrongCityName: 'Wrong city name format. Please repeat:',
     fetchError: 'Something went wrong during fetching weather.',
     askForCity: 'Please, enter a city name:',
     unknownError: 'Unknown error',
     onenter: 'Type /leave to leave',
+    onleave: 'Type /help to select service',
 }
 
 const repeatKeyboard = createInlineKeyboard([
@@ -59,4 +64,10 @@ export const weatherScene = new Scenes.WizardScene<BotContext>(weatherSceneName,
             }
             ctx.scene.leave();
         }
-    })
+    }
+)
+
+weatherScene.command(commands.leave, async (ctx) => {
+    ctx.replyWithHTML(messages.onleave);
+    ctx.scene.leave();
+})
