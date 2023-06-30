@@ -1,4 +1,4 @@
-import 'module-alias/register';
+import 'module-alias/register.js';
 import { Telegraf, session } from 'telegraf';
 import { BotContext } from '@/interfaces/interfaces.js';
 import { sceneComposer } from '@/scenes/index.js';
