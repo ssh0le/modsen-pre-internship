@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from "mongoose";
+import mongoose from "mongoose";
 
 export const Task = mongoose.model('Task', new mongoose.Schema({
     description: {
@@ -15,9 +15,10 @@ export const Task = mongoose.model('Task', new mongoose.Schema({
         required: true,
     },
     userId: {
+        type: mongoose.SchemaTypes.ObjectId,
         validate: {
-            validator: (value: ObjectId) => mongoose.isValidObjectId(value),
-            message: (props: {value: ObjectId}) => `${props.value} is not correct user id!`
+            validator: (value: mongoose.Types.ObjectId) => mongoose.Types.ObjectId.isValid(value),
+            message: (props: {value: mongoose.Types.ObjectId}) => `${props.value} is not correct user id!`
         },
         required: true,
     },
