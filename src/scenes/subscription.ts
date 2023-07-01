@@ -1,7 +1,7 @@
 import { ScheduleManager } from "@/classes/scheduleManager.js";
 import { Markup, Scenes, Telegraf, deunionize } from "telegraf";
 import { BotContext, DBUser } from "@/interfaces/interfaces.js";
-import { createSubscription, deleteSubscription, getAllSubscribtions, getSubscription, getUserByTelegramId } from "@/modules/database/database.js";
+import { createSubscription, deleteSubscription, getAllSubscribtions, getSubscription, getUserByTelegramId } from "@/services/index.js";
 import { fetchWeatherForecatByCityName } from "@/services/fetchWeather.js";
 import { convertToTime, createForecastMessage, createInlineKeyboard, isValidName, makeOnEnterMessage } from "@/helpers/index.js";
 

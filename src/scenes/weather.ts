@@ -21,7 +21,7 @@ const messages = {
     askForCity: 'Please, enter a city name:',
     unknownError: 'Unknown error',
     onenter: 'Type /leave to leave',
-    onleave: 'Type /help to select service',
+    onleave: 'Type /help for menu',
 }
 
 const repeatKeyboard = createInlineKeyboard([

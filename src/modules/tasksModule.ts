@@ -1,5 +1,5 @@
 import { BotContext } from "@/interfaces/interfaces.js"
-import { getUserByTelegramId } from "@/modules/index.js"
+import { getUserByTelegramId } from "@/services/index.js"
 import { sceneNames } from "@/scenes/index.js";
 
 export const taskService = async (ctx: BotContext) => { 

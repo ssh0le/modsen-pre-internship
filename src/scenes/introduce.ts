@@ -1,5 +1,5 @@
 import { Composer, Markup, Scenes, deunionize } from "telegraf";
-import { createUser } from "@/modules/index.js";
+import { createUser } from "@/services/index.js";
 import { BotContext } from "@/interfaces/interfaces.js";
 import { createEnterNameMessage, isNegativeAnswer, isRecognizedAnswer } from "@/helpers/index.js";
 

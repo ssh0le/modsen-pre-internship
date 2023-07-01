@@ -2,7 +2,7 @@ import { ScheduleManager } from "@/classes/scheduleManager.js";
 import { BotContext, DBTask, DBUser } from "@/interfaces/interfaces.js";
 import { Markup, Scenes, deunionize } from "telegraf";
 import { convertDate, createInlineKeyboard, getFormattedFullDate, isInArrayRange, taskListToString, taskToString } from "@/helpers/index.js";
-import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "@/modules/database/database.js";
+import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "@/services/index.js";
 export const tasksSceneName = 'TASKS'
 
 const notificationManager = new ScheduleManager<string>();
