@@ -1,7 +1,3 @@
-import * as dotenv from 'dotenv';
-
-dotenv.config();
-
 export const placesApiUrl = process.env.PLACES_API_URL;
 export const catApiUrl = process.env.CAT_API_URL;
 export const dogApiUrl = process.env.DOG_API_URL;
