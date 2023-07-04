@@ -1,11 +1,9 @@
 import axios from 'axios';
-import { CatPhoto } from '@/interfaces/interfaces.js';
 import { Context } from 'telegraf';
-import { catApiUrl } from '@/config.js';
 
-const messages = {
-    fetchError: 'Fetching cat photo error',
-}
+import { catApiUrl } from '@/config.js';
+import { catModuleMessages as messages } from '@/constants/index.js';
+import { CatPhoto } from '@/interfaces/interfaces.js';
 
 export const sendCatPhoto = async (ctx: Context) => {
     try {

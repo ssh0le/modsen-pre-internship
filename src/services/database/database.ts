@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
-import { Task, User, Subscription } from "./models/index.js";
-import { DBSubscription, DBTask, DBUser, Time } from "@/interfaces/interfaces.js";
+
 import { dbUrl } from "@/config.js";
 import { tryCatchWrapper } from "@/helpers/tryCatchWrapper.js";
+import { DBSubscription, DBTask, DBUser, Time } from "@/interfaces/interfaces.js";
+
+import { Subscription,Task, User } from "./models/index.js";
 
 mongoose.connect(dbUrl);
 
@@ -70,7 +72,7 @@ export async function deleteSubscription(subscriptionId: mongoose.Types.ObjectId
     })
 }
 
-export async function getAllSubscribtions() {
+export async function getAllSubscriptions() {
     try {
         const subs = await Subscription.find<DBSubscription>({}).populate<DBUser>('userId');
         return subs;

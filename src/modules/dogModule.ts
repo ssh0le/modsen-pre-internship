@@ -1,11 +1,9 @@
 import axios from "axios";
-import { DogPhoto } from "@/interfaces/interfaces.js";
 import { Context } from "telegraf";
-import { dogApiUrl } from "@/config.js";
 
-const messages = {
-    fetchError: 'Failed to upload dog photo',
-}
+import { dogApiUrl } from "@/config.js";
+import { dogModuleMessages } from "@/constants/index.js";
+import { DogPhoto } from "@/interfaces/interfaces.js";
 
 export const sendDogPhoto = async (ctx: Context) => {
     try {
@@ -16,6 +14,6 @@ export const sendDogPhoto = async (ctx: Context) => {
             throw response.data.status;
         }
     } catch (e) {
-        await ctx.reply(messages.fetchError);
+        await ctx.reply(dogModuleMessages.fetchError);
     }
 }

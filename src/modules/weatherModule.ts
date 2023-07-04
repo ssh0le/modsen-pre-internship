@@ -1,6 +1,8 @@
 import {  Composer, Scenes} from "telegraf";
+
+import { weatherCallbackActions as callbackActions,weatherSceneName} from '@/constants/index.js'
 import { BotContext,} from "@/interfaces/interfaces.js";
-import { weatherScene, callbackActions, weatherSceneName } from "@/scenes/weather.js";
+import { weatherScene } from "@/scenes/weather.js";
 
 const stage = new Scenes.Stage<BotContext>([weatherScene]);
 

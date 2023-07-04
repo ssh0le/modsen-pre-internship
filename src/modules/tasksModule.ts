@@ -1,6 +1,6 @@
 import { BotContext } from "@/interfaces/interfaces.js"
-import { getUserByTelegramId } from "@/services/index.js"
 import { sceneNames } from "@/scenes/index.js";
+import { getUserByTelegramId } from "@/services/index.js"
 
 export const taskService = async (ctx: BotContext) => { 
     const user = await getUserByTelegramId(ctx.from.id);

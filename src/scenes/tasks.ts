@@ -1,73 +1,18 @@
+import { deunionize,Scenes } from "telegraf";
+
 import { ScheduleManager } from "@/classes/scheduleManager.js";
+import { menuKeyboard, optionsKeyboard, tasksActions, tasksMessages, tasksOptions, tasksSceneName } from "@/constants/index.js";
+import { convertDate, getFormattedFullDate, isInArrayRange, makeTaskKeyboard, taskListToString, taskToString } from "@/helpers/index.js";
 import { BotContext, DBTask, DBUser } from "@/interfaces/interfaces.js";
-import { Markup, Scenes, deunionize } from "telegraf";
-import { convertDate, createInlineKeyboard, getFormattedFullDate, isInArrayRange, taskListToString, taskToString } from "@/helpers/index.js";
 import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "@/services/index.js";
-export const tasksSceneName = 'TASKS'
 
 const notificationManager = new ScheduleManager<string>();
-
-const dateFormat = "DD/MM/YYYY HH:MM";
-
-const actions = {
-    deleteTask: 'DELETE_TASK',
-    remindTask: 'REMIND_TASK',
-    cancelRemindTask: 'CANCEL_REMIND_TASK'
-}
-
-const messages = {
-    onenter: 'Type /leave to leave from service',
-    wrongDate: 'Wrong date format, try again:',
-    listHeader: 'Your Tasks:',
-    wrongTaskId: 'I don\'t see the task with this id. Please reenter:',
-    wrongTaskIdFormat: 'Wrong format of number, please reenter:',
-    refreshing: 'Refreshing...',
-    notificationIsCreated: 'Notification has been added for this date:\n',
-    askToSelectOperation: 'Select operation',
-    askToEnterDate: `Enter date in format ${dateFormat}:`,
-    taskDeleted: 'Task has been deleted',
-    askForDate: `Enter date of notification in format ${dateFormat}:`,
-    notificationCanceled: 'Notification has been cancelled',
-    askToEnterDescription: 'Enter description: ',
-    noTaskToChoose: 'You don\'t have tasks to choose from',
-    noTask: 'You have no tasks',
-    askToSelectTask: 'Enter number of the task: ',
-}
-
-const options = {
-    addTask: 'Add task',
-    selectTask: 'Select task',
-    menu: 'Menu',
-}
-
-const optionsKeyboard = Markup.keyboard([
-    [options.addTask],
-    [options.selectTask],
-    ['leave'],
-]).oneTime().resize();
-
-const menuKeyboard = Markup.keyboard([
-    ['Menu'],
-]).oneTime().resize();
-
-const makeTaskKeyboard = (task: DBTask) => {
-    const has = notificationManager.hasJob(task._id.toString());
-    return createInlineKeyboard([
-        [
-            { text: 'Delete', callback_data: `${actions.deleteTask}-${task._id}` },
-            {
-                text: has ? 'Cancel notification' : 'Notify',
-                callback_data: `${has ? actions.cancelRemindTask : actions.remindTask}-${task._id}`
-            }
-        ]
-    ]);
-}
 
 const getDate = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const date = convertDate(text);
     if (!date) {
-        await ctx.reply(messages.wrongDate, menuKeyboard);
+        await ctx.reply(tasksMessages.wrongDate, menuKeyboard);
         ctx.wizard.selectStep(ctx.wizard.cursor);
         return null;
     }
@@ -101,18 +46,18 @@ const selectTask = async (ctx: BotContext) => {
     if (Number.isInteger(taskId) && ctx.session.tasks) {
         const tasks: DBTask[] = ctx.session.tasks;
         if (!isInArrayRange(taskId, tasks.length)) {
-            ctx.reply(messages.wrongTaskId, menuKeyboard);
+            ctx.reply(tasksMessages.wrongTaskId, menuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
             return;
         }
-        ctx.reply(taskToString(tasks[taskId]), { reply_markup: makeTaskKeyboard(tasks[taskId]) });
+        ctx.reply(taskToString(tasks[taskId]), { reply_markup: makeTaskKeyboard(tasks[taskId], notificationManager) });
         return ctx.wizard.selectStep(6);
     } else {
         if (ctx.session.tasks) {
-            ctx.reply(messages.wrongTaskIdFormat, menuKeyboard);
+            ctx.reply(tasksMessages.wrongTaskIdFormat, menuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
         } else {
-            ctx.reply(messages.refreshing)
+            ctx.reply(tasksMessages.refreshing)
             ctx.scene.reenter();
         }
     }
@@ -130,7 +75,7 @@ const createTaskNotification = async (ctx: BotContext) => {
             ctx.deleteMessage();
             ctx.reply(`🔔 ${task.description}`);
         })
-        await ctx.reply(`${messages.notificationIsCreated}${getFormattedFullDate(date)}`);
+        await ctx.reply(`${tasksMessages.notificationIsCreated}${getFormattedFullDate(date)}`);
         await ctx.scene.reenter();
     }
 }
@@ -138,12 +83,12 @@ const createTaskNotification = async (ctx: BotContext) => {
 export const tasksScene = new Scenes.WizardScene<BotContext>(
     tasksSceneName,
     async (ctx) => {
-        ctx.reply(messages.askToSelectOperation);
+        ctx.reply(tasksMessages.askToSelectOperation);
         return ctx.wizard.selectStep(0);
     },
     async (ctx) => {
         await readDescription(ctx);
-        await ctx.reply(messages.askToEnterDate, menuKeyboard);
+        await ctx.reply(tasksMessages.askToEnterDate, menuKeyboard);
         return ctx.wizard.next();
     },
     async (ctx) => {
@@ -167,10 +112,10 @@ export const tasksScene = new Scenes.WizardScene<BotContext>(
 
 // example: 'DELETE_TASK-542c2b97bac0595474108b48'
 
-tasksScene.action(new RegExp(`^${actions.deleteTask}-[0-9a-z]*$`), async (ctx) => {
+tasksScene.action(new RegExp(`^${tasksActions.deleteTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
     await deleteTask(taskId);
-    ctx.answerCbQuery(messages.taskDeleted);
+    ctx.answerCbQuery(tasksMessages.taskDeleted);
     notificationManager.cancelJob(taskId);
     ctx.deleteMessage();
     ctx.scene.enter(tasksSceneName);
@@ -178,10 +123,10 @@ tasksScene.action(new RegExp(`^${actions.deleteTask}-[0-9a-z]*$`), async (ctx) =
 
 // example: 'REMIND_TASK-542c2b97bac0595474108b48'
 
-tasksScene.action(new RegExp(`^${actions.remindTask}-[0-9a-z]*$`), async (ctx) => {
+tasksScene.action(new RegExp(`^${tasksActions.remindTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
     ctx.scene.session.taskNotification = { id: taskId };
-    ctx.reply(messages.askForDate);
+    ctx.reply(tasksMessages.askForDate);
     ctx.wizard.selectStep(4);
     ctx.deleteMessage();
     ctx.answerCbQuery();
@@ -189,40 +134,40 @@ tasksScene.action(new RegExp(`^${actions.remindTask}-[0-9a-z]*$`), async (ctx) =
 
 // example: 'CANCEL_REMIND_TASK-542c2b97bac0595474108b48'
 
-tasksScene.action(new RegExp(`^${actions.cancelRemindTask}-[0-9a-z]*$`), async (ctx) => {
+tasksScene.action(new RegExp(`^${tasksActions.cancelRemindTask}-[0-9a-z]*$`), async (ctx) => {
     const taskId = ctx.match[0].split('-')[1];
     const today = new Date();
     today.setMinutes(today.getMinutes() + 1)
     const [task]: DBTask[] = ctx.session.tasks.filter(t => t._id == taskId);
     if (task) {
         notificationManager.cancelJob(taskId)
-        ctx.editMessageReplyMarkup(makeTaskKeyboard(task));
+        ctx.editMessageReplyMarkup(makeTaskKeyboard(task, notificationManager));
     }
-    ctx.answerCbQuery(messages.notificationCanceled);
+    ctx.answerCbQuery(tasksMessages.notificationCanceled);
 })
 
-tasksScene.hears(options.addTask, async (ctx) => {
-    ctx.reply(messages.askToEnterDescription, menuKeyboard);
+tasksScene.hears(tasksOptions.addTask, async (ctx) => {
+    ctx.reply(tasksMessages.askToEnterDescription, menuKeyboard);
     ctx.wizard.selectStep(1);
 })
 
-tasksScene.hears(options.selectTask, async (ctx) => {
+tasksScene.hears(tasksOptions.selectTask, async (ctx) => {
     if (!ctx.session.tasks || !ctx.session.tasks.length) {
-        ctx.reply(messages.noTaskToChoose);
+        ctx.reply(tasksMessages.noTaskToChoose);
         ctx.scene.reenter();
         return;
     }
-    ctx.reply(messages.askToSelectTask, menuKeyboard);
+    ctx.reply(tasksMessages.askToSelectTask, menuKeyboard);
     ctx.wizard.selectStep(3);
 })
 
-tasksScene.hears(options.menu, async (ctx) => {
+tasksScene.hears(tasksOptions.menu, async (ctx) => {
     ctx.scene.reenter();
 })
 
 tasksScene.enter(async ctx => {
-    await ctx.reply(messages.onenter);
-    await ctx.reply(messages.listHeader, optionsKeyboard);
+    await ctx.reply(tasksMessages.onenter);
+    await ctx.reply(tasksMessages.listHeader, optionsKeyboard);
     if (ctx.session.user) {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
@@ -232,6 +177,6 @@ tasksScene.enter(async ctx => {
     if (tasks.length) {
         await ctx.reply(taskListToString(tasks).trimEnd())
     } else {
-        ctx.reply(messages.noTask);
+        ctx.reply(tasksMessages.noTask);
     }
 })

@@ -3,26 +3,7 @@ import { BotContext, WeatherError } from "@/interfaces/interfaces.js";
 import { fetchWeatherForecatByCityName } from "@/services/index.js";
 import { Scenes, deunionize } from "telegraf";
 import { createForecastMessage, createInlineKeyboard, isValidName } from "@/helpers/index.js";
-
-export const callbackActions = {
-    repeatSearch: 'REPEAT_SEARCH',
-    leaveSearch: 'LEAVE_SEARCH',
-}
-
-export const weatherSceneName = 'WEATHER_SEARCH';
-
-const commands = {
-    leave: 'leave',
-}
-
-const messages = {
-    wrongCityName: 'Wrong city name format. Please repeat:',
-    fetchError: 'Something went wrong during fetching weather.',
-    askForCity: 'Please, enter a city name:',
-    unknownError: 'Unknown error',
-    onenter: 'Type /leave to leave',
-    onleave: 'Type /help for menu',
-}
+import { weatherCallbackActions as callbackActions,  weatherSceneName, weatherMessages as messages, weatherCommands as commands} from "@/constants/weather.js";
 
 const repeatKeyboard = createInlineKeyboard([
     [{ text: 'Repeat', callback_data: callbackActions.repeatSearch }],

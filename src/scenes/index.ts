@@ -1,11 +1,14 @@
 import { Composer, Scenes } from "telegraf";
-import { introduceComposer, introduceSceneName, introduceScene } from "./introduce.js";
-import { weatherSceneName, weatherScene  } from "./weather.js";
-import { subscriptionScene, subscriptionSceneName } from "./subscription.js";
+
+import { introduceSceneName, placesSceneName, subscriptionSceneName, tasksSceneName,weatherSceneName } from "@/constants/index.js";
 import { BotContext } from "@/interfaces/interfaces.js";
-import { tasksScene, tasksSceneName } from "./tasks.js";
 import { sendDescription } from '@/modules/helpModule.js';
-import { placesSceneName, placesScene } from "./places.js";
+
+import { introduceComposer, introduceScene } from "./introduce.js";
+import { placesScene } from "./places.js";
+import { subscriptionScene } from "./subscription.js";
+import { tasksScene} from "./tasks.js";
+import { weatherScene } from "./weather.js";
 export * from './subscription.js'
 
 export const sceneNames = {
