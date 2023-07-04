@@ -13,22 +13,17 @@ export async function getUserByTelegramId(id: number) {
 }
 
 export async function createUser({ telegramId, name, city }: { telegramId: number, name: string, city: string | undefined }) {
-    try {
-        await User.create({
-            name,
-            telegramId,
-            city: city ? city : null,
-        });
-    } catch (e) {
-
-    }
+    return await tryCatchWrapper(User.create({
+        name,
+        telegramId,
+        city: city ? city : null,
+    }))
 }
 
 export async function getTasksByUserId(id: mongoose.Types.ObjectId) {
-    const tasks = await Task.find<DBTask>({
+    return await tryCatchWrapper(Task.find<DBTask>({
         userId: id,
-    })
-    return tasks;
+    }))
 }
 
 export async function createTask({ userId, date, description }: { userId: mongoose.Types.ObjectId, date: Date, description: string }) {
@@ -40,13 +35,9 @@ export async function createTask({ userId, date, description }: { userId: mongoo
 }
 
 export async function deleteTask(taskId: string) {
-    try {
-        await Task.deleteOne({
-            _id: taskId,
-        });
-    } catch (e) {
-        console.log(e);
-    }
+    return await tryCatchWrapper(Task.deleteOne({
+        _id: taskId,
+    }));
 }
 
 export async function getSubscription(userId: mongoose.Types.ObjectId) {
@@ -73,10 +64,5 @@ export async function deleteSubscription(subscriptionId: mongoose.Types.ObjectId
 }
 
 export async function getAllSubscriptions() {
-    try {
-        const subs = await Subscription.find<DBSubscription>({}).populate<DBUser>('userId');
-        return subs;
-    } catch (e) {
-        console.log(e);
-    }
+   return await tryCatchWrapper(Subscription.find<DBSubscription>({}).populate<DBUser>('userId'));
 }

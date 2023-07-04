@@ -5,8 +5,7 @@ import { leaveMenu, subscriptionActions, subscriptionMessages, subscriptionScene
 import { convertToTime, isValidName, makeForecast, makeOnEnterMessage, makeSubscribeKeyboard } from "@/helpers/index.js";
 import { restoreScheduledSubscriptions } from "@/helpers/restoreScheduledSubscriptions.js";
 import { BotContext, DBUser } from "@/interfaces/interfaces.js";
-import { fetchWeatherForecatByCityName } from "@/services/fetchWeather.js";
-import { createSubscription, deleteSubscription, getSubscription, getUserByTelegramId } from "@/services/index.js";
+import { createSubscription, deleteSubscription, fetchWeatherForecatByCityName, getSubscription, getUserByTelegramId } from "@/services/index.js";
 
 const subscriptionManager = new ScheduleManager<string>();
 
