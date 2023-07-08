@@ -1,4 +1,4 @@
-import { DBTask } from "@/interfaces/database.interface.js";
+import { DBTask } from "@/interfaces/index.js";
 
 import { taskToString } from "./index.js";
 
