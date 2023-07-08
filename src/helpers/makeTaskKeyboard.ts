@@ -1,6 +1,6 @@
 import { ScheduleManager } from "@/classes/scheduleManager.js";
 import { tasksActions, tasksOptions } from "@/constants/index.js";
-import { DBTask } from "@/interfaces/interfaces.js";
+import { DBTask } from "@/interfaces/index.js";
 
 import { createInlineKeyboard } from "./createInlineKeyboard.js";
 

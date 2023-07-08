@@ -1,4 +1,4 @@
-import { Weather } from "interfaces/interfaces.js";
+import { Weather } from "@/interfaces/index.js";
 
 
 export const createForecastMessage = (data: Weather) : string => {

@@ -1,6 +1,6 @@
-import { DBSubscription } from "@/interfaces/interfaces.js";
+import { DBSubscription } from "@/interfaces/index.js";
 
-export const makeOnEnterMessage = async (subscription: DBSubscription) => {
+export const makeOnSubscriptionEnterMessage = async (subscription: DBSubscription) => {
     let message = `Daily weather forecast subscription\n`;
     if (subscription) {
         message += `Your subscription:\n`

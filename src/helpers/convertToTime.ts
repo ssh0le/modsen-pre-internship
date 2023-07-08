@@ -1,4 +1,4 @@
-import { Time } from "../interfaces/interfaces.js";
+import { Time } from "../interfaces/index.js";
 
 // Following regExp describe time template in format HH:MM
 // Example: 0:0 23:59
