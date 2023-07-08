@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 import { dbUrl } from "@/config.js";
 import { tryCatchWrapper } from "@/helpers/tryCatchWrapper.js";
-import { DBSubscription, DBTask, DBUser, Time } from "@/interfaces/interfaces.js";
+import { DBSubscription, DBTask, DBUser, Time } from "@/interfaces/index.js";
 
 import { Subscription,Task, User } from "./models/index.js";
 

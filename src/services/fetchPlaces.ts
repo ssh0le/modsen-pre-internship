@@ -1,6 +1,7 @@
 import axios from "axios";
-import { Coords, PlacesResponse } from "@/interfaces/interfaces.js";
+
 import { placesApiUrl } from "@/config.js";
+import { Coords, PlacesResponse } from "@/interfaces/index.js";
 
 
 export const fetchPlaces = async (keyword: string, coord: Coords, type: string, pageToken?: string) => {

@@ -1,6 +1,7 @@
-import { geocodingApiUrl } from "@/config.js";
 import axios from "axios";
-import { Coords } from "@interfaces/interfaces.js";
+
+import { geocodingApiUrl } from "@/config.js";
+import { Coords } from "@/interfaces/index.js";
 
 export const getCityCoords = async (name: string) => {
     try {

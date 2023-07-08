@@ -1,6 +1,7 @@
-import { isValidName } from "@/helpers/isValidCityName.js";
-import { Time } from "@/interfaces/interfaces.js";
 import mongoose, { ObjectId } from "mongoose";
+
+import { isValidName } from "@/helpers/isValidCityName.js";
+import { Time } from "@/interfaces/index.js";
 
 export const Subscription = mongoose.model('Subscription', new mongoose.Schema({
     userId: {
