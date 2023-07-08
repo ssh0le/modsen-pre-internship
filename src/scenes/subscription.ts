@@ -49,7 +49,7 @@ const readTime = async (ctx: BotContext) => {
     const { city, userId } = ctx.scene.session.subscription;
     if (city && userId) {
         const sub = await createSubscription(userId, serverTime, city, ctx.chat.id);
-        ctx.scene.session.subscription.id = sub._id;
+        ctx.scene.session.subscription.id = sub.id;
         subscriptionManager.addRecurrentJob(userId.toString(), serverTime.hours, serverTime.minutes, async () => {
             await ctx.reply(await makeForecast(city));
         })
@@ -86,6 +86,7 @@ subscriptionScene.action(subscriptionActions.subscribe, async (ctx) => {
 subscriptionScene.action(subscriptionActions.unsubscribe, async (ctx) => {
     const subscriptionId = ctx.scene.session.subscription.id;
     if (subscriptionId) {
+        subscriptionManager.cancelJob(subscriptionId.toString());
         await deleteSubscription(subscriptionId);
         await ctx.answerCbQuery(subscriptionMessages.userUnsubscribed);
         await ctx.deleteMessage();
@@ -99,7 +100,7 @@ subscriptionScene.enter(async (ctx) => {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
     const user: DBUser = ctx.session.user;
-    const subscription = await getSubscription(user._id);
-    ctx.scene.session.subscription = { userId: user._id, city: undefined, id: subscription?._id, chatId: undefined };
+    const subscription = await getSubscription(user.id);
+    ctx.scene.session.subscription = { userId: user.id, city: undefined, id: subscription?.id, chatId: undefined };
     ctx.reply(await makeOnSubscriptionEnterMessage(subscription), { reply_markup: makeSubscribeKeyboard(subscription != null) });
 })

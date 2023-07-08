@@ -32,7 +32,7 @@ const readDateCreateTask = async (ctx: BotContext) => {
         if (!date) return;
         const description = ctx.scene.session.newTask.description;
         const user: DBUser = ctx.session.user;
-        await createTask({ userId: user._id, description, date });
+        await createTask({ userId: user.id, description, date });
         ctx.scene.reenter();
     } catch (e) {
         ctx.wizard.selectStep(ctx.wizard.cursor);
@@ -171,7 +171,7 @@ tasksScene.enter(async ctx => {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
     const user: DBUser = ctx.session.user;
-    ctx.session.tasks = await getTasksByUserId(user._id);
+    ctx.session.tasks = await getTasksByUserId(user.id);
     const tasks: DBTask[] = ctx.session.tasks;
     if (tasks.length) {
         await ctx.reply(taskListToString(tasks).trimEnd())

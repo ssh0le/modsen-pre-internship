@@ -25,4 +25,4 @@ export const User = mongoose.model('User', new mongoose.Schema({
             message: (props: { value: string }) => `${props.value} is incorrect city name`
         },
     },
-}))
+}, {id: true}))

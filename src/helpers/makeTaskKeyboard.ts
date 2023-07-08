@@ -5,13 +5,13 @@ import { DBTask } from "@/interfaces/index.js";
 import { createInlineKeyboard } from "./createInlineKeyboard.js";
 
 export const makeTaskKeyboard = (task: DBTask, notificationManager: ScheduleManager<string>) => {
-    const has = notificationManager.hasJob(task._id.toString());
+    const has = notificationManager.hasJob(task.id.toString());
     return createInlineKeyboard([
         [
-            { text: tasksOptions.delete, callback_data: `${tasksActions.deleteTask}-${task._id}` },
+            { text: tasksOptions.delete, callback_data: `${tasksActions.deleteTask}-${task.id}` },
             {
                 text: has ? tasksOptions.cancelNotification : tasksOptions.notification,
-                callback_data: `${has ? tasksActions.cancelRemindTask : tasksActions.remindTask}-${task._id}`
+                callback_data: `${has ? tasksActions.cancelRemindTask : tasksActions.remindTask}-${task.id}`
             }
         ]
     ]);

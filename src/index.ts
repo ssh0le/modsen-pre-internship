@@ -1,12 +1,11 @@
 import { session,Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
 
+import { botToken } from '@/config.js';
 import { botCommands, botMessages } from '@/constants/index.js';
 import { BotContext } from '@/interfaces/index.js';
 import { placesService, sendCatPhoto, sendDescription, sendDogPhoto, subscriptionService, taskService, weatherComposer, weatherService } from '@/modules/index.js';
 import { restoreSubscriptions, sceneComposer } from '@/scenes/index.js';
-
-import { botToken } from './config.js';
 
 const bot = new Telegraf(botToken);
 

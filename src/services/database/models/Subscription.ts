@@ -45,4 +45,4 @@ export const Subscription = mongoose.model('Subscription', new mongoose.Schema({
         },
         required: true,
     },
-}))
+}, {id: true}))

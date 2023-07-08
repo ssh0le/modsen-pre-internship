@@ -22,4 +22,4 @@ export const Task = mongoose.model('Task', new mongoose.Schema({
         },
         required: true,
     },
-}))
+}, {id: true}))
