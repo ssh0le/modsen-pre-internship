@@ -1,9 +1,9 @@
 import { deunionize,Scenes } from "telegraf";
 
 import { ScheduleManager } from "@/classes/scheduleManager.js";
-import { menuKeyboard, optionsKeyboard, tasksActions, tasksMessages, tasksOptions, tasksSceneName } from "@/constants/index.js";
-import { convertDate, getFormattedFullDate, isInArrayRange, makeTaskKeyboard, taskListToString, taskToString } from "@/helpers/index.js";
-import { BotContext, DBTask, DBUser } from "@/interfaces/interfaces.js";
+import { tasksActions, tasksMessages, tasksOptions, tasksSceneName } from "@/constants/index.js";
+import { convertDate, getFormattedFullDate, isInArrayRange, makeTaskKeyboard, taskListToString, tasksMenuKeyboard, tasksOptionsKeyboard, taskToString } from "@/helpers/index.js";
+import { BotContext, DBTask, DBUser } from "@/interfaces/index.js";
 import { createTask, deleteTask, getTasksByUserId, getUserByTelegramId } from "@/services/index.js";
 
 const notificationManager = new ScheduleManager<string>();
@@ -12,7 +12,7 @@ const getDate = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const date = convertDate(text);
     if (!date) {
-        await ctx.reply(tasksMessages.wrongDate, menuKeyboard);
+        await ctx.reply(tasksMessages.wrongDate, tasksMenuKeyboard);
         ctx.wizard.selectStep(ctx.wizard.cursor);
         return null;
     }
@@ -46,7 +46,7 @@ const selectTask = async (ctx: BotContext) => {
     if (Number.isInteger(taskId) && ctx.session.tasks) {
         const tasks: DBTask[] = ctx.session.tasks;
         if (!isInArrayRange(taskId, tasks.length)) {
-            ctx.reply(tasksMessages.wrongTaskId, menuKeyboard);
+            ctx.reply(tasksMessages.wrongTaskId, tasksMenuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
             return;
         }
@@ -54,7 +54,7 @@ const selectTask = async (ctx: BotContext) => {
         return ctx.wizard.selectStep(6);
     } else {
         if (ctx.session.tasks) {
-            ctx.reply(tasksMessages.wrongTaskIdFormat, menuKeyboard);
+            ctx.reply(tasksMessages.wrongTaskIdFormat, tasksMenuKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor);
         } else {
             ctx.reply(tasksMessages.refreshing)
@@ -88,7 +88,7 @@ export const tasksScene = new Scenes.WizardScene<BotContext>(
     },
     async (ctx) => {
         await readDescription(ctx);
-        await ctx.reply(tasksMessages.askToEnterDate, menuKeyboard);
+        await ctx.reply(tasksMessages.askToEnterDate, tasksMenuKeyboard);
         return ctx.wizard.next();
     },
     async (ctx) => {
@@ -128,7 +128,6 @@ tasksScene.action(new RegExp(`^${tasksActions.remindTask}-[0-9a-z]*$`), async (c
     ctx.scene.session.taskNotification = { id: taskId };
     ctx.reply(tasksMessages.askForDate);
     ctx.wizard.selectStep(4);
-    ctx.deleteMessage();
     ctx.answerCbQuery();
 })
 
@@ -147,7 +146,7 @@ tasksScene.action(new RegExp(`^${tasksActions.cancelRemindTask}-[0-9a-z]*$`), as
 })
 
 tasksScene.hears(tasksOptions.addTask, async (ctx) => {
-    ctx.reply(tasksMessages.askToEnterDescription, menuKeyboard);
+    ctx.reply(tasksMessages.askToEnterDescription, tasksMenuKeyboard);
     ctx.wizard.selectStep(1);
 })
 
@@ -157,7 +156,7 @@ tasksScene.hears(tasksOptions.selectTask, async (ctx) => {
         ctx.scene.reenter();
         return;
     }
-    ctx.reply(tasksMessages.askToSelectTask, menuKeyboard);
+    ctx.reply(tasksMessages.askToSelectTask, tasksMenuKeyboard);
     ctx.wizard.selectStep(3);
 })
 
@@ -167,7 +166,7 @@ tasksScene.hears(tasksOptions.menu, async (ctx) => {
 
 tasksScene.enter(async ctx => {
     await ctx.reply(tasksMessages.onenter);
-    await ctx.reply(tasksMessages.listHeader, optionsKeyboard);
+    await ctx.reply(tasksMessages.listHeader, tasksOptionsKeyboard);
     if (ctx.session.user) {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }

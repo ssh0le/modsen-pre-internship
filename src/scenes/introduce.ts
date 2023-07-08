@@ -1,8 +1,8 @@
-import { Composer, deunionize,Markup, Scenes } from "telegraf";
+import { Composer, deunionize, Scenes } from "telegraf";
 
-import { introduceActions, introduceMessages as messages, introduceRemoveKeyboard as removeKeyboard, introduceSceneName, yesNoKeyboard } from "@/constants/index.js";
-import { createEnterNameMessage, isNegativeAnswer, isRecognizedAnswer } from "@/helpers/index.js";
-import { BotContext } from "@/interfaces/interfaces.js";
+import { introduceActions, introduceMessages as messages, introduceSceneName} from "@/constants/index.js";
+import { createIntroduceOnEnterMessage, isNegativeAnswer, isRecognizedAnswer, removeKeyboard, yesNoKeyboard } from "@/helpers/index.js";
+import { BotContext } from "@/interfaces/index.js";
 import { createUser } from "@/services/index.js";
 
 export const introduceComposer = new Composer<Scenes.WizardContext>();
@@ -53,5 +53,5 @@ export const introduceScene = new Scenes.WizardScene<BotContext>(
 
 introduceScene.enter(async (ctx) => {
     await ctx.replyWithHTML(messages.onenter);
-    ctx.reply(createEnterNameMessage(ctx.from.first_name), yesNoKeyboard);
+    ctx.reply(createIntroduceOnEnterMessage(ctx.from.first_name), yesNoKeyboard);
 })

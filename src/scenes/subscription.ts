@@ -1,10 +1,9 @@
 import { deunionize, Scenes, Telegraf} from "telegraf";
 
 import { ScheduleManager } from "@/classes/scheduleManager.js";
-import { leaveMenu, subscriptionActions, subscriptionMessages, subscriptionSceneName } from "@/constants/subscription.js";
-import { convertToTime, isValidName, makeForecast, makeOnEnterMessage, makeSubscribeKeyboard } from "@/helpers/index.js";
-import { restoreScheduledSubscriptions } from "@/helpers/restoreScheduledSubscriptions.js";
-import { BotContext, DBUser } from "@/interfaces/interfaces.js";
+import { subscriptionActions, subscriptionMessages, subscriptionSceneName } from "@/constants/index.js";
+import { convertToTime, isValidName, leaveKeyboard, makeForecast, makeOnSubscriptionEnterMessage, makeSubscribeKeyboard, restoreScheduledSubscriptions } from "@/helpers/index.js";
+import { BotContext, DBUser } from "@/interfaces/index.js";
 import { createSubscription, deleteSubscription, fetchWeatherForecatByCityName, getSubscription, getUserByTelegramId } from "@/services/index.js";
 
 const subscriptionManager = new ScheduleManager<string>();
@@ -17,7 +16,7 @@ const readCity = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     if (text) {
         if (!isValidName(text)) {
-            ctx.reply(subscriptionMessages.notValidCity, leaveMenu);
+            ctx.reply(subscriptionMessages.notValidCity, leaveKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor - 1);
             return;
         }
@@ -27,20 +26,20 @@ const readCity = async (ctx: BotContext) => {
                 throw data;
             }
         } catch (e) {
-            ctx.reply(subscriptionMessages.cityNotFound, leaveMenu);
+            ctx.reply(subscriptionMessages.cityNotFound, leaveKeyboard);
             ctx.wizard.selectStep(ctx.wizard.cursor - 1);
             return;
         }
     }
     ctx.scene.session.subscription.city = text;
-    ctx.reply(subscriptionMessages.askForTime, leaveMenu)
+    ctx.reply(subscriptionMessages.askForTime, leaveKeyboard)
 }
 
 const readTime = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     const time = convertToTime(text);
     if (!time) {
-        ctx.reply(subscriptionMessages.notValidTime, leaveMenu);
+        ctx.reply(subscriptionMessages.notValidTime, leaveKeyboard);
         ctx.wizard.selectStep(ctx.wizard.cursor - 1);
         return;
     }
@@ -54,7 +53,7 @@ const readTime = async (ctx: BotContext) => {
         subscriptionManager.addRecurrentJob(userId.toString(), serverTime.hours, serverTime.minutes, async () => {
             await ctx.reply(await makeForecast(city));
         })
-        await ctx.reply(subscriptionMessages.userSubscribed, leaveMenu);
+        await ctx.reply(subscriptionMessages.userSubscribed, leaveKeyboard);
         ctx.scene.reenter();
     }
 }
@@ -80,7 +79,7 @@ export const subscriptionScene = new Scenes.WizardScene<BotContext>(
 subscriptionScene.action(subscriptionActions.subscribe, async (ctx) => {
     ctx.deleteMessage();
     ctx.answerCbQuery();
-    ctx.reply(subscriptionMessages.askForCity, leaveMenu)
+    ctx.reply(subscriptionMessages.askForCity, leaveKeyboard)
     ctx.wizard.selectStep(1);
 })
 
@@ -95,12 +94,12 @@ subscriptionScene.action(subscriptionActions.unsubscribe, async (ctx) => {
 })
 
 subscriptionScene.enter(async (ctx) => {
-    await ctx.replyWithHTML(subscriptionMessages.onenter, leaveMenu);
+    await ctx.replyWithHTML(subscriptionMessages.onenter, leaveKeyboard);
     if (ctx.session.user) {
         ctx.session.user = await getUserByTelegramId(ctx.from.id);
     }
     const user: DBUser = ctx.session.user;
     const subscription = await getSubscription(user._id);
     ctx.scene.session.subscription = { userId: user._id, city: undefined, id: subscription?._id, chatId: undefined };
-    ctx.reply(await makeOnEnterMessage(subscription), { reply_markup: makeSubscribeKeyboard(subscription != null) });
+    ctx.reply(await makeOnSubscriptionEnterMessage(subscription), { reply_markup: makeSubscribeKeyboard(subscription != null) });
 })

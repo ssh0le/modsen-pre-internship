@@ -1,9 +1,10 @@
 import axios, { AxiosError } from "axios";
-import { BotContext, WeatherError } from "@/interfaces/interfaces.js";
-import { fetchWeatherForecatByCityName } from "@/services/index.js";
-import { Scenes, deunionize } from "telegraf";
+import { deunionize,Scenes } from "telegraf";
+
+import { weatherActions as callbackActions,  weatherCommands as commands,weatherMessages as messages, weatherSceneName} from "@/constants/index.js";
 import { createForecastMessage, createInlineKeyboard, isValidName } from "@/helpers/index.js";
-import { weatherCallbackActions as callbackActions,  weatherSceneName, weatherMessages as messages, weatherCommands as commands} from "@/constants/weather.js";
+import { BotContext, WeatherError } from "@/interfaces/index.js";
+import { fetchWeatherForecatByCityName } from "@/services/index.js";
 
 const repeatKeyboard = createInlineKeyboard([
     [{ text: 'Repeat', callback_data: callbackActions.repeatSearch }],

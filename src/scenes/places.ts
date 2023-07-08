@@ -1,22 +1,21 @@
-import { hasResults, isIncludeType, makeTypesKeyboard, sendPlacesByPage, updateKeyword } from '@helpers/index.js';
-import { BotContext } from "@interfaces/interfaces.js";
 import { deunionize, Scenes } from "telegraf";
 
-import { placesLeaveKeyboard, placesMessages, placesPerPage, placesRemoveKeyboard, placesSceneName,placeTypes } from '@/constants/index.js';
-import { isValidName } from "@/helpers/isValidCityName.js";
+import { placesMessages, placesPerPage, placesSceneName, placesTypes } from '@/constants/index.js';
+import { hasResults, isIncludeType, isValidName, leaveKeyboard, makeTypesMenu, removeKeyboard, sendPlacesByPage, updateKeyword } from '@/helpers/index.js';
+import { BotContext } from "@/interfaces/index.js";
 import { fetchPlaces, getCityCoords } from "@/services/index.js";
 
 const readCityName = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
     if (!isValidName(text)) {
-        ctx.reply(placesMessages.invalidCity, placesLeaveKeyboard);
+        ctx.reply(placesMessages.invalidCity, leaveKeyboard);
         ctx.wizard.selectStep(ctx.wizard.cursor - 1);
         return;
     }
     try {
         const cityCoords = await getCityCoords(text);
         if (!cityCoords) throw cityCoords;
-        ctx.reply(placesMessages.askToSelectType, makeTypesKeyboard(placeTypes));
+        ctx.reply(placesMessages.askToSelectType, makeTypesMenu(placesTypes));
         ctx.scene.session.places = { city: text, coords: cityCoords };
     } catch (e) {
         ctx.reply(placesMessages.cityNotFound);
@@ -27,7 +26,7 @@ const readCityName = async (ctx: BotContext) => {
 
 const readPlaceType = async (ctx: BotContext) => {
     const { text } = deunionize(ctx.message);
-    if (!isIncludeType(placeTypes, text)) {
+    if (!isIncludeType(placesTypes, text)) {
         ctx.wizard.selectStep(ctx.wizard.cursor - 1);
         ctx.reply(placesMessages.wrongType);
         return;
@@ -45,12 +44,12 @@ const readPlaceType = async (ctx: BotContext) => {
     ctx.scene.session.places.type = type;
     const { results } = await fetchPlaces(keyword, coords, type);
     if (hasResults(results)) {
-        ctx.reply(placesMessages.noPlaces, placesRemoveKeyboard);
+        ctx.reply(placesMessages.noPlaces, removeKeyboard);
         ctx.scene.leave();
         return;
     }
     await sendPlacesByPage(ctx, results, 0, coords, placesPerPage);
-    ctx.replyWithHTML(placesMessages.onleave, placesRemoveKeyboard);
+    ctx.replyWithHTML(placesMessages.onleave, removeKeyboard);
     return ctx.scene.leave();
 }
 
@@ -67,7 +66,7 @@ export const placesScene = new Scenes.WizardScene<BotContext>(
 );
 
 placesScene.enter(async ctx => {
-    await ctx.reply(placesMessages.leaveHint, placesLeaveKeyboard);
+    await ctx.reply(placesMessages.leaveHint, leaveKeyboard);
     await ctx.replyWithHTML(placesMessages.onenter);
     ctx.scene.session.places = {};
 })

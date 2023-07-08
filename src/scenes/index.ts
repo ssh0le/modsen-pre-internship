@@ -1,7 +1,7 @@
 import { Composer, Scenes } from "telegraf";
 
 import { introduceSceneName, placesSceneName, subscriptionSceneName, tasksSceneName,weatherSceneName } from "@/constants/index.js";
-import { BotContext } from "@/interfaces/interfaces.js";
+import { BotContext } from "@/interfaces/index.js";
 import { sendDescription } from '@/modules/helpModule.js';
 
 import { introduceComposer, introduceScene } from "./introduce.js";
