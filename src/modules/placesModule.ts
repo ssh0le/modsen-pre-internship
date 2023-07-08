@@ -1,4 +1,4 @@
-import { BotContext } from "@/interfaces/interfaces.js"
+import { BotContext } from "@/interfaces/index.js"
 import { sceneNames } from "@/scenes/index.js";
 
 export const placesService = async (ctx: BotContext) => {

@@ -3,7 +3,7 @@ import { Context } from "telegraf";
 
 import { dogApiUrl } from "@/config.js";
 import { dogModuleMessages } from "@/constants/index.js";
-import { DogPhoto } from "@/interfaces/interfaces.js";
+import { DogPhoto } from "@/interfaces/index.js";
 
 export const sendDogPhoto = async (ctx: Context) => {
     try {
