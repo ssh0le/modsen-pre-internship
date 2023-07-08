@@ -1,16 +1,3 @@
-import { Markup } from "telegraf";
-
-export const subscriptionSceneName = 'SUBSCRIPTION_SCENE';
-
-export const leaveMenu = Markup.keyboard([
-    ['leave']
-]).oneTime().resize();
-
-export const subscriptionActions = {
-    subscribe: 'SUBSCRIBE',
-    unsubscribe: 'UNSUBSCRIBE',
-}
-
 export const subscriptionMessages = {
     foreacastTitle: 'Daily forecast subscription:\n\n',
     foreacastFailed: 'Daily foreact failed',

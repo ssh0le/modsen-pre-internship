@@ -1,0 +1,1 @@
+export const weatherSceneName = 'WEATHER_SEARCH';

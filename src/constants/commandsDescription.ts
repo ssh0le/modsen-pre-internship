@@ -1,4 +1,4 @@
-export const description = [
+export const commandsDescription = [
     'These are my services:',
     '/cat - Random cat photo',
     '/dog - Random dog photo',

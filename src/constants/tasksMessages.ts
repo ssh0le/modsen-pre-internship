@@ -1,14 +1,4 @@
-import { Markup } from "telegraf";
-
-export const tasksSceneName = 'TASKS'
-
-const dateFormat = "DD/MM/YYYY HH:MM";
-
-export const tasksActions = {
-    deleteTask: 'DELETE_TASK',
-    remindTask: 'REMIND_TASK',
-    cancelRemindTask: 'CANCEL_REMIND_TASK'
-}
+import { dateFormat } from "./index.js";
 
 export const tasksMessages = {
     onenter: 'Type /leave to leave from service',
@@ -28,23 +18,3 @@ export const tasksMessages = {
     noTask: 'You have no tasks',
     askToSelectTask: 'Enter number of the task: ',
 }
-
-export const tasksOptions = {
-    addTask: 'Add task',
-    selectTask: 'Select task',
-    menu: 'Menu',
-    delete: 'Delete',
-    notification: 'Notify',
-    cancelNotification: 'Cancel notification',
-    leave: 'leave',
-}
-
-export const optionsKeyboard = Markup.keyboard([
-    [tasksOptions.addTask],
-    [tasksOptions.selectTask],
-    [tasksOptions.leave],
-]).oneTime().resize();
-
-export const menuKeyboard = Markup.keyboard([
-    [tasksOptions.menu],
-]).oneTime().resize();
