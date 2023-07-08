@@ -1,9 +1,9 @@
-import { Coords } from "./interfaces.js"
+import { Coords } from "./index.js"
 
 export interface Weather {
     coord: Coords
     weather: Description[]
-    main: Main
+    main: Forecast
     wind: Wind
     name: string
     cod: number
@@ -15,7 +15,7 @@ export interface Description {
     description: string
 }
 
-export interface Main {
+export interface Forecast {
     temp: number
     feels_like: number
     pressure: number

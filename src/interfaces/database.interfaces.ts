@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import { Time } from "./interfaces.js";
+
+import { Time } from "./index.js";
 
 export interface DBUser {
     _id: mongoose.Types.ObjectId,

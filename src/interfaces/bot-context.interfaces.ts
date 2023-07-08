@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import { Context, Scenes, Telegraf } from "telegraf";
-import { Coords} from "./interfaces.js";
 import { Update } from "telegraf/types";
-import { Place } from "./places.interface.js";
+
+import { Coords} from "./index.js";
+import { Place } from "./places.interfaces.js";
 
 
 interface CustomSessionData extends Scenes.WizardSessionData {
